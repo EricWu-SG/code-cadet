@@ -15,7 +15,7 @@
 <title>Code Cadet: Galaxy Builder</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Press+Start+2P&family=Fredoka:wght@400;500;600;700&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Caveat+Brush&family=Patrick+Hand&family=Patrick+Hand+SC&family=Fredoka:wght@400;500;600;700&display=swap" rel="stylesheet">
 <style>
 :root {
   --space-deep: #0e0a3d; --space-mid: #2a2090; --space-purple: #6b3fc7;
@@ -78,8 +78,6 @@ html, body { font-family: 'Fredoka', system-ui, sans-serif; color: var(--text-da
 .pet-name { font-family: 'Press Start 2P', cursive; font-size: 14px; color: var(--blue-dark); }
 .pet-rename { font-size: 11px; background: var(--gold); border: 2px solid var(--text-dark); padding: 4px 8px; border-radius: 6px; cursor: pointer; font-weight: 600; box-shadow: 0 2px 0 var(--text-dark); }
 .pet-msg { font-size: 17px; line-height: 1.5; color: var(--text-dark); font-weight: 500; }
-.pet-msg::before { content: '"'; color: var(--blue); font-weight: 700; }
-.pet-msg::after { content: '"'; color: var(--blue); font-weight: 700; }
 .hero { background: linear-gradient(180deg, #fff 0%, #fef8e0 100%); border: 5px solid var(--text-dark); border-radius: 24px; padding: 24px; margin-bottom: 20px; box-shadow: 0 8px 0 var(--text-dark), 0 12px 30px var(--shadow); position: relative; overflow: hidden; }
 .hero::before { content: ''; position: absolute; top: -40px; right: -40px; width: 180px; height: 180px; background: radial-gradient(circle, var(--gold) 30%, transparent 70%); opacity: 0.3; }
 .hero-tag { display: inline-block; background: var(--red); color: white; font-family: 'Press Start 2P', cursive; font-size: 10px; padding: 6px 12px; border-radius: 6px; border: 3px solid var(--text-dark); box-shadow: 0 3px 0 var(--text-dark); margin-bottom: 14px; }
@@ -147,8 +145,7 @@ html, body { font-family: 'Fredoka', system-ui, sans-serif; color: var(--text-da
 .quiz-feedback strong { color: var(--blue-dark); }
 .lesson-flow { display: grid; gap: 16px; }
 .step-card { background: white; border: 4px solid var(--text-dark); border-radius: 18px; padding: 22px; box-shadow: 0 6px 0 var(--text-dark), 0 8px 20px var(--shadow); position: relative; }
-.step-card.locked { opacity: 0.45; pointer-events: none; filter: grayscale(0.7); }
-.step-card.locked::before { content: '🔒 Finish the step above first'; position: absolute; top: -12px; left: 50%; transform: translateX(-50%); background: var(--text-dark); color: var(--gold); padding: 4px 14px; border-radius: 10px; font-family: 'Press Start 2P'; font-size: 10px; letter-spacing: 1px; white-space: nowrap; z-index: 2; pointer-events: none; }
+.step-card.locked { opacity: 0.5; pointer-events: none; }
 .step-card.done { border-color: var(--green); background: #f0fff0; }
 .step-number { position: absolute; top: -16px; left: 16px; background: var(--gold); color: var(--text-dark); font-family: 'Press Start 2P', cursive; font-size: 11px; padding: 6px 12px; border-radius: 8px; border: 3px solid var(--text-dark); box-shadow: 0 3px 0 var(--text-dark); }
 .step-card.done .step-number { background: var(--green); color: white; }
@@ -212,8 +209,6 @@ html, body { font-family: 'Fredoka', system-ui, sans-serif; color: var(--text-da
 .shop-item.owned { background: #e8f9e8; }
 .shop-item.equipped { background: var(--gold); border-color: var(--red); }
 .shop-item.locked { opacity: 0.5; cursor: not-allowed; }
-.shop-item.unaffordable { opacity: 0.55; background: #f0f0f0; }
-.shop-item.unaffordable .shop-price { color: #999; }
 .shop-emoji { font-size: 40px; margin-bottom: 6px; }
 .shop-name { font-size: 13px; font-weight: 600; margin-bottom: 4px; }
 .shop-price { font-family: 'Press Start 2P', cursive; font-size: 10px; color: var(--gold-dark); display: flex; align-items: center; justify-content: center; gap: 4px; }
@@ -282,6 +277,528 @@ html, body { font-family: 'Fredoka', system-ui, sans-serif; color: var(--text-da
 ::-webkit-scrollbar { width: 12px; height: 12px; }
 ::-webkit-scrollbar-track { background: #e0e6f0; border-radius: 6px; }
 ::-webkit-scrollbar-thumb { background: var(--blue); border-radius: 6px; border: 2px solid #e0e6f0; }
+
+/* ==========================================================================
+   v5 HAND-DRAWN POP — visual override (sits on top of v4 base styles)
+   Design principles:
+   - All fonts handwritten (Caveat Brush + Patrick Hand)
+   - Saturated color blocks RESERVED for L1 CTAs only
+   - L2 secondary CTAs: outlined / paper-toned
+   - L3 information / status: soft paper, no shadow drama
+   - Hand-drawn imperfection: rounded corners with varied radii, micro rotations
+   ========================================================================== */
+
+:root {
+  --ink: var(--text-dark);
+  --ink-soft: #4a3b8f;
+  --ink-faint: #8c80c4;
+  --paper: #fffaf0;
+  --paper-soft: #fff5e0;
+  --paper-warm: #ffeec4;
+  --accent-pink: #ff2d92;
+  --accent-cyan: #00d4ff;
+  --accent-yellow: #ffd23f;
+  --accent-purple: #b347ff;
+  --accent-orange: #ff7a3d;
+  --cta-green: #4ce665;
+  --cta-green-dark: #1eb838;
+}
+
+/* Background — keep cosmic feel but slightly softer */
+html, body {
+  background:
+    radial-gradient(ellipse at 15% 20%, var(--accent-purple) 0%, transparent 35%),
+    radial-gradient(ellipse at 85% 70%, var(--accent-pink) 0%, transparent 35%),
+    linear-gradient(180deg, #1a0944 0%, #3d1980 70%, #6e3aa8 100%);
+  background-attachment: fixed;
+}
+
+/* Headline / display font everywhere that was Press Start 2P */
+.logo-text,
+.pet-name,
+.hero-title,
+.step-title,
+.modal-title,
+.quiz-question,
+.week-card-title,
+.hero-card-name,
+.shop-item-name,
+.quiz-bonus,
+h1, h2, h3 {
+  font-family: 'Caveat Brush', cursive !important;
+  letter-spacing: 0.5px !important;
+}
+
+/* Body / paragraph font */
+body, .pet-msg, .hero-subtitle, .step-body, .quiz-option,
+.modal-body, p, li, label, input, textarea, select, button {
+  font-family: 'Patrick Hand', 'Fredoka', sans-serif;
+}
+
+/* Small caps style for tags / labels */
+.hero-tag, .pet-origin-tag, .hud-item, .step-number,
+.week-card-tag, .badge, .pill {
+  font-family: 'Patrick Hand SC', 'Patrick Hand', sans-serif !important;
+  letter-spacing: 1px !important;
+}
+
+/* ===== HEADER / LOGO ===== */
+.logo-icon {
+  border-radius: 50% 45% 52% 48% / 47% 52% 48% 53% !important;
+  background: var(--accent-pink) !important;
+  border: 3px solid var(--ink) !important;
+  box-shadow: 0 4px 0 var(--ink) !important;
+  transform: rotate(-5deg);
+}
+.logo-icon::after { color: white !important; text-shadow: 2px 2px 0 var(--ink) !important; }
+.logo-text {
+  font-size: 32px !important; line-height: 0.95 !important;
+  color: var(--ink) !important;
+  text-shadow: 3px 3px 0 var(--accent-pink) !important;
+}
+.logo-text .sub {
+  font-family: 'Patrick Hand', sans-serif !important;
+  font-size: 16px !important; color: var(--ink-soft) !important;
+  letter-spacing: 0 !important;
+  text-shadow: none !important;
+  margin-top: 2px !important;
+  font-weight: 700;
+}
+
+/* ===== HUD CHIPS — L3 information, paper-toned ===== */
+.hud-item {
+  background: var(--paper-soft) !important;
+  border: 2.5px solid var(--ink) !important;
+  border-radius: 16px 20px 14px 18px !important;
+  padding: 6px 14px !important;
+  font-size: 18px !important;
+  color: var(--ink) !important;
+  box-shadow: 0 2px 0 var(--ink-faint) !important;
+  font-weight: 700;
+  transform: rotate(-1deg);
+}
+.hud-item:nth-child(2) { transform: rotate(1deg); }
+.hud-item:nth-child(3) { transform: rotate(-0.5deg); }
+.hud-item:nth-child(4) { transform: rotate(0.8deg); }
+.hud-item:nth-child(5) { transform: rotate(-0.3deg); }
+.hud-item.tappable { cursor: pointer; }
+.hud-item.tappable:hover { transform: translateY(-2px) rotate(0deg); }
+
+/* Streak chip when active */
+.hud-streak.gold {
+  background: var(--accent-yellow) !important;
+  animation: none !important;
+  color: var(--ink) !important;
+}
+#hudBackup.backed-up {
+  background: #d8f5d8 !important;
+  border-color: var(--cta-green-dark) !important;
+}
+#hudBackup.backed-up span { color: var(--cta-green-dark) !important; }
+#hudBackup.needs-backup { animation: none !important; }
+
+/* ===== PET CARD ===== */
+.pet-card {
+  background: var(--paper) !important;
+  border: 3px solid var(--ink) !important;
+  border-radius: 28px 22px 30px 24px / 24px 30px 22px 28px !important;
+  box-shadow: 0 6px 0 var(--ink), 0 14px 30px rgba(0,0,0,0.3) !important;
+  position: relative; overflow: hidden;
+}
+.pet-card::before {
+  content: ''; position: absolute; top: -40px; right: -40px;
+  width: 200px; height: 200px;
+  background: radial-gradient(circle, var(--accent-yellow) 0%, transparent 70%);
+  opacity: 0.3; pointer-events: none;
+}
+.pet-name {
+  font-size: 42px !important; line-height: 1 !important;
+  color: var(--ink) !important;
+  text-shadow: 3px 3px 0 var(--accent-pink) !important;
+}
+.pet-msg {
+  font-family: 'Patrick Hand', sans-serif !important;
+  font-size: 22px !important;
+  font-weight: 700; color: var(--ink) !important;
+  line-height: 1.35 !important;
+}
+.pet-origin-tag {
+  background: var(--paper-soft) !important;
+  color: var(--ink-soft) !important;
+  font-size: 13px !important;
+  padding: 3px 10px !important;
+  border-radius: 12px 6px 14px 8px !important;
+  border: 2px solid var(--ink-soft) !important;
+  box-shadow: none !important;
+  font-weight: 700;
+}
+.pet-rename {
+  background: white !important;
+  border-radius: 14px 10px 16px 12px !important;
+  font-size: 14px !important;
+  font-weight: 700;
+  font-family: 'Patrick Hand', sans-serif !important;
+}
+
+/* ===== HERO MISSION CARD ===== */
+.hero {
+  background: var(--paper) !important;
+  border: 3px solid var(--ink) !important;
+  border-radius: 32px 24px 28px 30px / 26px 30px 24px 32px !important;
+  box-shadow: 0 6px 0 var(--ink), 0 14px 30px rgba(0,0,0,0.3) !important;
+  position: relative; overflow: hidden;
+}
+.hero::before {
+  content: ''; position: absolute; top: -60px; right: -60px;
+  width: 280px; height: 280px;
+  background: radial-gradient(circle, var(--accent-pink) 0%, transparent 65%);
+  opacity: 0.18 !important; pointer-events: none;
+}
+.hero::after {
+  content: '✦'; position: absolute; bottom: 20px; right: 30px;
+  font-size: 80px; color: var(--accent-yellow); opacity: 0.4;
+  pointer-events: none;
+  font-family: 'Caveat Brush', cursive;
+}
+.hero-tag {
+  background: var(--paper-warm) !important;
+  color: var(--ink-soft) !important;
+  font-size: 15px !important;
+  padding: 4px 14px !important;
+  border-radius: 14px 8px 18px 10px !important;
+  border: 2px solid var(--ink-soft) !important;
+  box-shadow: none !important;
+  font-weight: 700;
+}
+.hero-tag.weekend {
+  background: var(--accent-yellow) !important;
+  color: var(--ink) !important;
+  border-color: var(--ink) !important;
+}
+.hero-title {
+  font-size: 54px !important; line-height: 0.95 !important;
+  color: var(--ink) !important;
+  text-shadow: 4px 4px 0 var(--accent-pink) !important;
+  margin-bottom: 14px;
+}
+.hero-subtitle {
+  font-family: 'Patrick Hand', sans-serif !important;
+  color: var(--ink-soft) !important;
+  font-size: 22px !important;
+  font-weight: 700;
+}
+.hero-meta { gap: 8px !important; }
+.hero-meta span {
+  background: var(--paper-soft);
+  color: var(--ink-soft) !important;
+  padding: 4px 12px;
+  border: 2px solid var(--ink-soft);
+  border-radius: 12px 16px 12px 14px;
+  font-size: 16px !important;
+  font-weight: 700;
+}
+
+/* ===== BUTTONS — L1 vs L2 hierarchy ===== */
+.btn {
+  font-family: 'Caveat Brush', cursive !important;
+  font-size: 26px !important;
+  padding: 10px 28px !important;
+  border: 3.5px solid var(--ink) !important;
+  border-radius: 18px 14px 20px 16px !important;
+  letter-spacing: 0.5px !important;
+  line-height: 1.2;
+  min-height: 52px;
+}
+/* L1 PRIMARY — saturated green with glow */
+.btn-primary, .btn-success {
+  background: var(--cta-green) !important;
+  color: var(--ink) !important;
+  box-shadow: 0 6px 0 var(--cta-green-dark), 0 10px 20px rgba(76, 230, 101, 0.4) !important;
+  transform: rotate(-1deg);
+}
+.btn-primary:hover, .btn-success:hover {
+  transform: rotate(0deg) translateY(-2px);
+  box-shadow: 0 8px 0 var(--cta-green-dark), 0 14px 26px rgba(76, 230, 101, 0.5) !important;
+}
+.btn-primary:active, .btn-success:active {
+  transform: rotate(0deg) translateY(5px);
+  box-shadow: 0 1px 0 var(--cta-green-dark) !important;
+}
+/* L2 SECONDARY — outlined, low saturation */
+.btn-secondary {
+  background: white !important;
+  color: var(--ink) !important;
+  font-size: 22px !important;
+  box-shadow: 0 4px 0 var(--ink-faint) !important;
+  transform: rotate(0.5deg);
+}
+.btn-secondary:hover { transform: rotate(0deg) translateY(-2px); box-shadow: 0 6px 0 var(--ink-faint) !important; }
+.btn-secondary:active { transform: rotate(0deg) translateY(3px); box-shadow: 0 1px 0 var(--ink-faint) !important; }
+/* Gold = special / weekend / level up */
+.btn-gold {
+  background: var(--accent-yellow) !important;
+  color: var(--ink) !important;
+  box-shadow: 0 6px 0 #c9a300, 0 10px 20px rgba(255, 210, 63, 0.4) !important;
+}
+
+/* ===== STEP CARDS ===== */
+.step-card {
+  background: white !important;
+  border: 3px solid var(--ink) !important;
+  border-radius: 24px 18px 22px 20px !important;
+  box-shadow: 0 5px 0 var(--ink), 0 10px 20px rgba(0,0,0,0.2) !important;
+}
+.step-card.done {
+  border-color: var(--cta-green-dark) !important;
+  background: #f0fff0 !important;
+}
+.step-card.done .step-number {
+  background: var(--cta-green) !important;
+  color: var(--ink) !important;
+  border-color: var(--ink) !important;
+}
+.step-card.partial {
+  border-color: var(--accent-yellow) !important;
+  background: #fffdf0 !important;
+}
+.step-card.partial .step-number {
+  background: var(--accent-yellow) !important;
+  color: var(--ink) !important;
+}
+.step-card.locked {
+  opacity: 0.5;
+  pointer-events: none;
+  position: relative;
+}
+.step-card.locked::before {
+  content: '🔒 Finish the step above to unlock!';
+  position: absolute; top: 50%; left: 50%;
+  transform: translate(-50%, -50%) rotate(-2deg);
+  background: var(--paper-warm);
+  border: 2.5px solid var(--ink);
+  color: var(--ink);
+  font-family: 'Patrick Hand', sans-serif;
+  font-weight: 700;
+  font-size: 20px;
+  padding: 10px 18px;
+  border-radius: 16px 12px 18px 14px;
+  box-shadow: 0 4px 0 var(--ink);
+  z-index: 5;
+  pointer-events: none;
+  opacity: 2;
+}
+.step-number {
+  background: var(--accent-yellow) !important;
+  color: var(--ink) !important;
+  font-size: 14px !important;
+  padding: 5px 12px !important;
+  border-radius: 14px 8px 16px 10px !important;
+  border: 2.5px solid var(--ink) !important;
+  box-shadow: 0 2px 0 var(--ink) !important;
+}
+.step-title {
+  font-size: 26px !important;
+  color: var(--ink) !important;
+}
+.step-body {
+  font-family: 'Patrick Hand', sans-serif !important;
+  font-size: 18px !important;
+  color: var(--ink) !important;
+  line-height: 1.6 !important;
+}
+
+/* ===== MODAL ===== */
+.modal-content {
+  background: var(--paper) !important;
+  border: 3px solid var(--ink) !important;
+  border-radius: 28px 22px 30px 24px / 24px 30px 22px 28px !important;
+  box-shadow: 0 8px 0 var(--ink), 0 16px 40px rgba(0,0,0,0.5) !important;
+}
+.modal-title {
+  font-size: 38px !important;
+  color: var(--ink) !important;
+  text-shadow: 3px 3px 0 var(--accent-pink) !important;
+}
+.modal-close {
+  background: var(--paper-warm) !important;
+  border: 2.5px solid var(--ink) !important;
+  border-radius: 50% 45% 52% 48% !important;
+  color: var(--ink) !important;
+  box-shadow: 0 3px 0 var(--ink) !important;
+}
+
+/* ===== QUIZ OPTIONS ===== */
+.quiz-option {
+  background: white !important;
+  border: 2.5px solid var(--ink) !important;
+  border-radius: 16px 20px 14px 18px !important;
+  color: var(--ink) !important;
+  font-family: 'Patrick Hand', sans-serif !important;
+  font-size: 18px !important;
+  font-weight: 700 !important;
+  padding: 12px 18px !important;
+  box-shadow: 0 3px 0 var(--ink-faint) !important;
+}
+.quiz-option:hover:not(.disabled):not(.correct):not(.wrong) {
+  transform: translateY(-2px);
+  box-shadow: 0 5px 0 var(--ink-faint) !important;
+  background: var(--paper-soft) !important;
+}
+.quiz-option.correct {
+  background: var(--cta-green) !important;
+  border-color: var(--cta-green-dark) !important;
+  box-shadow: 0 3px 0 var(--cta-green-dark) !important;
+}
+.quiz-option.wrong {
+  background: #ffd5d5 !important;
+  border-color: #d93636 !important;
+  box-shadow: 0 3px 0 #d93636 !important;
+}
+.quiz-option.reveal-correct {
+  background: var(--cta-green) !important;
+  border-color: var(--cta-green-dark) !important;
+}
+
+.quiz-feedback {
+  background: var(--paper-warm) !important;
+  border: 2.5px solid var(--ink) !important;
+  border-radius: 18px 14px 20px 16px !important;
+  font-family: 'Patrick Hand', sans-serif !important;
+  font-size: 18px !important;
+  font-weight: 700;
+  color: var(--ink) !important;
+}
+.quiz-feedback.success {
+  background: #d8f5d8 !important;
+  border-color: var(--cta-green-dark) !important;
+}
+.quiz-feedback.fail {
+  background: #ffe8e8 !important;
+  border-color: #d93636 !important;
+}
+
+/* ===== WEEK MAP / WEEK CARDS ===== */
+.week-card, .weeks > * {
+  background: var(--paper-soft) !important;
+  border: 2.5px solid var(--ink-soft) !important;
+  border-radius: 18px 14px 20px 14px !important;
+  box-shadow: 0 3px 0 var(--ink-faint) !important;
+  color: var(--ink) !important;
+}
+.week-card.completed, .week-card.done {
+  background: var(--paper-warm) !important;
+  border-color: var(--ink) !important;
+}
+.week-card.current, .week-card.active {
+  background: var(--cta-green) !important;
+  border: 3px solid var(--ink) !important;
+  box-shadow: 0 5px 0 var(--ink), 0 8px 16px rgba(76, 230, 101, 0.5) !important;
+  transform: rotate(-1.5deg) scale(1.03);
+}
+.week-card.locked {
+  background: rgba(140, 128, 196, 0.15) !important;
+  border: 2.5px dashed var(--ink-faint) !important;
+  opacity: 0.6;
+  cursor: not-allowed !important;
+  box-shadow: none !important;
+  color: var(--ink-faint) !important;
+}
+
+/* ===== HERO CARDS COLLECTION ===== */
+.hero-card-grid > *, .hero-card {
+  background: var(--paper) !important;
+  border: 2.5px solid var(--ink) !important;
+  border-radius: 18px 14px 20px 16px !important;
+  box-shadow: 0 4px 0 var(--ink) !important;
+}
+.hero-card.locked {
+  opacity: 0.45;
+  background: #e8e8e8 !important;
+}
+
+/* ===== SHOP / OUTFIT ===== */
+.shop-item, .outfit-card {
+  background: var(--paper) !important;
+  border: 2.5px solid var(--ink) !important;
+  border-radius: 16px 20px 14px 18px !important;
+  box-shadow: 0 3px 0 var(--ink) !important;
+}
+.shop-item.equipped, .outfit-card.equipped {
+  background: var(--cta-green) !important;
+  border-color: var(--ink) !important;
+}
+
+/* ===== INPUT FIELDS ===== */
+input[type="text"], input[type="password"], textarea {
+  font-family: 'Patrick Hand', sans-serif !important;
+  border: 2.5px solid var(--ink) !important;
+  border-radius: 14px 18px 12px 16px !important;
+  background: white !important;
+  font-size: 18px !important;
+  color: var(--ink) !important;
+  padding: 10px 14px;
+}
+input[type="text"]:focus, input[type="password"]:focus, textarea:focus {
+  outline: none;
+  box-shadow: 0 0 0 3px var(--accent-yellow);
+}
+
+/* ===== SCROLLBAR ===== */
+::-webkit-scrollbar-thumb { background: var(--accent-purple) !important; }
+
+/* ===== COPY-BTN / SECONDARY ACTIONS ===== */
+.copy-btn {
+  font-family: 'Caveat Brush', cursive !important;
+  font-size: 22px !important;
+  background: var(--accent-yellow) !important;
+  border: 2.5px solid var(--ink) !important;
+  border-radius: 14px 18px 12px 16px !important;
+  color: var(--ink) !important;
+  box-shadow: 0 4px 0 var(--ink) !important;
+  padding: 8px 18px !important;
+}
+.copy-btn:hover { transform: translateY(-2px); }
+.copy-btn:active { transform: translateY(2px); box-shadow: 0 2px 0 var(--ink) !important; }
+
+/* ===== SELF-CHECK CHECKBOXES (Step 3) ===== */
+.self-check {
+  background: white !important;
+  border: 2.5px solid var(--ink) !important;
+  border-radius: 14px 18px 12px 16px !important;
+  font-family: 'Patrick Hand', sans-serif !important;
+  font-size: 18px !important;
+}
+.self-check.checked {
+  background: #d8f5d8 !important;
+  border-color: var(--cta-green-dark) !important;
+}
+.self-check-box {
+  border: 2.5px solid var(--ink) !important;
+  background: white !important;
+  border-radius: 6px 8px 6px 7px !important;
+}
+.self-check.checked .self-check-box {
+  background: var(--cta-green) !important;
+  color: var(--ink) !important;
+}
+
+/* ===== PROMPT BUILDER ===== */
+.prompt-builder {
+  background: var(--paper-soft) !important;
+  border: 2.5px dashed var(--ink) !important;
+  border-radius: 18px 14px 20px 16px !important;
+  font-family: 'Patrick Hand', sans-serif !important;
+  font-size: 18px !important;
+}
+.prompt-final {
+  background: var(--paper-warm) !important;
+  border: 2.5px solid var(--ink) !important;
+  border-radius: 16px 20px 14px 18px !important;
+  font-family: 'Patrick Hand', sans-serif !important;
+  font-size: 18px !important;
+  color: var(--ink) !important;
+}
+
 </style>
 </head>
 <body>
@@ -297,10 +814,10 @@ html, body { font-family: 'Fredoka', system-ui, sans-serif; color: var(--text-da
     <div class="logo-text">CADET ETHAN<span class="sub">★ GALAXY BUILDER ★</span></div>
   </div>
   <div class="hud">
-    <div class="hud-item tappable" onclick="showHudHelp('coins')"><div class="hud-icon coin"></div><span id="hudCoins">0</span></div>
-    <div class="hud-item hud-streak tappable" id="hudStreakBox" onclick="showHudHelp('streak')"><div class="hud-icon">🔥</div><span id="hudStreak">0</span></div>
-    <div class="hud-item tappable" onclick="showHudHelp('shield')"><div class="hud-icon">⚡</div><span id="hudFreeze">0</span></div>
-    <div class="hud-item tappable" onclick="showHudHelp('stars')"><div class="hud-icon">⭐</div><span id="hudStars">0</span></div>
+    <div class="hud-item"><div class="hud-icon coin"></div><span id="hudCoins">0</span></div>
+    <div class="hud-item hud-streak tappable" id="hudStreakBox" title="Daily streak" onclick="showHudInfo('streak')"><div class="hud-icon">🔥</div><span id="hudStreak">0</span></div>
+    <div class="hud-item tappable" title="Energy Shields protect your streak" onclick="showHudInfo('shield')"><div class="hud-icon">⚡</div><span id="hudFreeze">0</span></div>
+    <div class="hud-item tappable" onclick="openModal('heroModal')"><div class="hud-icon">⭐</div><span id="hudStars">0</span></div>
     <div class="hud-item tappable" onclick="openModal('mapModal')"><div class="hud-icon">🗺</div><span>Week <span id="hudWeek">1</span></span></div>
     <div class="hud-item tappable" id="hudBackup" onclick="manualBackup()"><div class="hud-icon">✉</div><span id="hudBackupStatus">No backup</span></div>
   </div>
@@ -324,7 +841,7 @@ html, body { font-family: 'Fredoka', system-ui, sans-serif; color: var(--text-da
     <h3 style="font-family:'Press Start 2P';font-size:12px;margin:18px 0 10px;">Recent Prompts</h3>
     <div id="parentPrompts" class="log-list"></div>
     <div style="display:flex; gap:10px; margin-top:18px; flex-wrap:wrap;">
-      <button class="btn btn-primary" onclick="openBackupEmail(false)">📧 EMAIL BACKUP</button>
+      <button class="btn btn-primary" onclick="manualBackup()">📧 EMAIL BACKUP</button>
       <button class="btn btn-success" onclick="exportData()">💾 EXPORT JSON</button>
       <button class="btn btn-secondary" onclick="document.getElementById('importInput').click()">📥 IMPORT</button>
       <input type="file" id="importInput" accept=".json,.txt" hidden onchange="importData(event)">
@@ -532,7 +1049,7 @@ html, body { font-family: 'Fredoka', system-ui, sans-serif; color: var(--text-da
     <h2>🔐 Parent Access</h2>
     <p>Enter the secret code:</p>
     <input type="password" id="parentPass" class="input" placeholder="••••" style="font-family:'Press Start 2P';font-size:14px;">
-    <p class="small-text" style="margin-top:10px;">Hint: Ask the parent who set this up.</p>
+    <p class="small-text" style="margin-top:10px;">Hint: Ask your parent for the reset code.</p>
     <button class="btn btn-primary" style="margin-top:14px;width:100%;justify-content:center;" onclick="checkParentPass()">UNLOCK</button>
   </div>
 </div>
@@ -1044,31 +1561,6 @@ function renderPet() {
   } else { outfitEl.textContent = ''; }
 }
 
-// HUD chip educational tooltips — Ethan can tap to learn what each stat means
-function showHudHelp(kind) {
-  const tips = {
-    coins: { icon: '🪙', title: 'Coins', body: 'Earn coins by completing missions, saving builds, writing notes, and answering quizzes. Spend them in the Shop on outfits for Pixel!' },
-    streak: { icon: '🔥', title: 'Streak', body: `You're on day ${state.streak} of showing up! A streak is how many days in a row you've done a mission. Even one tiny mission a day keeps it alive.` },
-    shield: { icon: '⚡', title: 'Energy Shield', body: `You have ${state.streakFreeze || 0} shield(s). A shield protects your streak on days you miss. They charge up automatically every few days, so don't stress about perfect attendance!` },
-    stars: { icon: '⭐', title: 'Hero Cards', body: `You've collected ${(state.heroes || []).length} Hero Card(s) so far! These are real-life pioneers — coders, scientists, builders. Each finished mission earns a card from that lesson's theme.` }
-  };
-  const t = tips[kind]; if (!t) return;
-  let existing = document.getElementById('hudHelpModal');
-  if (existing) existing.remove();
-  const m = document.createElement('div');
-  m.id = 'hudHelpModal';
-  m.className = 'modal-bg active';
-  m.onclick = (e) => { if (e.target === m) m.remove(); };
-  m.innerHTML = `<div class="modal" style="max-width:420px;text-align:center;">
-    <button class="modal-close" onclick="document.getElementById('hudHelpModal').remove()">×</button>
-    <div style="font-size:64px;line-height:1;margin:8px 0 12px;">${t.icon}</div>
-    <h2 style="margin-bottom:10px;">${t.title}</h2>
-    <p style="font-size:16px;line-height:1.5;">${t.body}</p>
-    <button class="btn btn-primary" style="margin-top:18px;width:100%;justify-content:center;" onclick="document.getElementById('hudHelpModal').remove()">GOT IT!</button>
-  </div>`;
-  document.body.appendChild(m);
-}
-
 // Pet poke: small fun interaction when tapped
 function petPoke() {
   const svg = document.getElementById('petSvg');
@@ -1086,13 +1578,7 @@ function petPoke() {
     "Tap tap! What's our next mission?",
     "I miss Codeon, but I love hanging with you!",
     "My antennas are tingling!",
-    "Did you know? On Codeon we hug by tapping helmets!",
-    "Whoa! Are we friends now? I think we are.",
-    "On my planet, that means 'good morning' 🌟",
-    "Tickle attack! Wait, who's tickling who?",
-    "I dreamed about pizza last night. What IS pizza?",
-    "If I had pockets, I'd give you a star.",
-    "Beep boop! Just kidding, I'm not a robot."
+    "Did you know? On Codeon we hug by tapping helmets!"
   ];
   const r = reactions[Math.floor(Math.random() * reactions.length)];
   document.getElementById('petMessage').textContent = r;
@@ -1134,17 +1620,14 @@ function renderToday() {
 
 function renderDailyQuiz() {
   const today = todayStr();
-  // If already answered today, show the EXACT same quiz that was answered (stored in state)
-  // Don't re-roll pickDailyQuiz — that would show a different quiz with answer pre-revealed.
-  let quiz;
-  if (state.dailyQuizAnsweredOn === today && state.dailyQuizLastShown) {
-    quiz = state.dailyQuizLastShown;
-  } else {
-    quiz = pickDailyQuiz();
-    // Remember which quiz we're showing today, so reload doesn't re-roll
-    state.dailyQuizLastShown = quiz;
+  // m5 fix: cache today's quiz so it persists across renders/reloads
+  // If we haven't picked one for today yet, pick now and store
+  if (state.dailyQuizCacheKey !== today) {
+    state.dailyQuizCache = pickDailyQuiz();
+    state.dailyQuizCacheKey = today;
     saveState();
   }
+  const quiz = state.dailyQuizCache || pickDailyQuiz();
   const qEl = document.getElementById('quizQuestion');
   const optsEl = document.getElementById('quizOptions');
   const fbEl = document.getElementById('quizFeedback');
@@ -1191,7 +1674,8 @@ function pickDailyQuiz() {
 }
 
 function answerDailyQuiz(index) {
-  const quiz = pickDailyQuiz();
+  // m5 fix: read from cache so we judge against the SAME question the user saw
+  const quiz = state.dailyQuizCache || pickDailyQuiz();
   const options = document.querySelectorAll('#quizOptions .quiz-option');
   options.forEach((opt, i) => {
     opt.classList.add('disabled');
@@ -1207,7 +1691,7 @@ function answerDailyQuiz(index) {
   } else {
     state.coins += 1;
     fb.className = 'quiz-feedback active fail';
-    fb.innerHTML = `<strong>Close one! Here's the trick:</strong> the answer is <strong>${escapeHtml(quiz.options[quiz.correct])}</strong>.<br>${escapeHtml(quiz.explain)}<br><br>+1 coin for thinking it through 🪙`;
+    fb.innerHTML = `<strong>Not quite!</strong> Answer: <strong>${escapeHtml(quiz.options[quiz.correct])}</strong><br>${escapeHtml(quiz.explain)}<br><br><strong>+1 coin for trying!</strong> 💪`;
   }
   state.dailyQuizAnsweredOn = todayStr();
   saveState(); renderHUD();
@@ -1232,19 +1716,32 @@ function renderWeeksGrid() {
   }).join('');
 }
 
-function showMysteryAlert() { showToast("🔒 Locked! Finish Week 3 to unlock this mystery world."); }
+function showMysteryAlert() { alert("🔒 Mystery World!\n\nThis world is locked. Complete Week 3 to unlock it. The journey continues..."); }
 
 function openMissionForWeek(weekId) {
-  const week = WEEKS.find(w => w.id === weekId);
-  if (!week) return;
-  // Check if this week has any lessons implemented
-  const hasAnyLesson = Object.keys(LESSONS).some(k => k.startsWith(weekId + '-'));
-  if (!hasAnyLesson) {
-    // Week is defined but content not built yet — treat as locked
-    showToast(`🔒 Week ${weekId} is coming soon! Keep going with current missions.`);
+  // M1 fix: check if this week is unlocked. Weeks beyond week 3 are locked.
+  // Also, Week N is only unlocked when Week N-1 is fully complete.
+  if (weekId > 3) {
+    showToast(`🔒 Mystery world! Finish Week 3 first to unlock.`);
     return;
   }
+  if (weekId > 1) {
+    const prevWeekKey = weekId - 1;
+    let prevComplete = true;
+    for (let d = 1; d <= 5; d++) {
+      const key = `${prevWeekKey}-${d}`;
+      if (LESSONS[key] && !state.completedLessons.includes(key)) {
+        prevComplete = false; break;
+      }
+    }
+    if (!prevComplete) {
+      showToast(`🔒 Finish Week ${prevWeekKey} first to unlock Week ${weekId}!`);
+      return;
+    }
+  }
   closeModal('mapModal');
+  const week = WEEKS.find(w => w.id === weekId);
+  if (!week) return;
   for (let d = 1; d <= 5; d++) {
     const key = `${weekId}-${d}`;
     if (LESSONS[key] && !state.completedLessons.includes(key)) {
@@ -1324,7 +1821,7 @@ function renderMissionSteps() {
       </div>
     </div>
 
-    <div class="step-card ${s.thinkCorrect === null ? 'locked' : ''} ${s.builtPrompt ? 'done' : ''}">
+    <div class="step-card ${s.thinkCorrect === null ? 'locked' : ''} ${s.builtPrompt && s.talkOpened ? 'done' : (s.builtPrompt ? 'partial' : '')}">
       <div class="step-number">STEP 2 · BUILD & TALK</div>
       <h3 class="step-title">🚀 Build Your Prompt & Open Claude</h3>
       <div class="step-body">
@@ -1511,8 +2008,7 @@ function renderShop() {
       const need = parseInt(item.unlock.replace('streak', ''));
       if (state.streak < need && !state.streakMilestones.includes(need)) locked = true;
     }
-    const unaffordable = !owned && !locked && state.coins < item.price;
-    const cls = [locked && 'locked', equipped && 'equipped', owned && !equipped && 'owned', unaffordable && 'unaffordable'].filter(Boolean).join(' ');
+    const cls = locked ? 'locked' : (equipped ? 'equipped' : (owned ? 'owned' : ''));
     return `<div class="shop-item ${cls}" onclick="${locked?`shopLocked('${item.unlock}')`:`tryShopItem('${item.id}', '${currentShopTab}')`}">
       <div class="shop-emoji">${item.emoji}</div>
       <div class="shop-name">${escapeHtml(item.name)}</div>
@@ -1858,16 +2354,60 @@ function openModal(id) {
 }
 function closeModal(id) { document.getElementById(id).classList.remove('active'); }
 
-// ESC key closes whichever modal is open
-document.addEventListener('keydown', (e) => {
-  if (e.key !== 'Escape') return;
-  // Ad-hoc modals (created dynamically)
-  ['emailPromptModal', 'hudHelpModal'].forEach(id => {
-    const el = document.getElementById(id);
-    if (el) el.remove();
-  });
-  // Persistent modals (in HTML)
-  document.querySelectorAll('.modal-bg.active').forEach(el => el.classList.remove('active'));
+// M4 fix: educational modals for HUD chips (streak / shield)
+function showHudInfo(type) {
+  let title, body;
+  if (type === 'streak') {
+    title = '🔥 Your Streak';
+    body = `<p style="font-size:20px; line-height:1.5; margin-bottom:14px;">
+      Your streak counts the days you log in and finish at least one mission.
+    </p>
+    <p style="font-size:20px; line-height:1.5; margin-bottom:14px;">
+      <strong>Right now:</strong> ${state.streak} day${state.streak === 1 ? '' : 's'} in a row!
+    </p>
+    <p style="font-size:20px; line-height:1.5;">
+      Streaks help you build the habit of coding every day. If you miss a day, you can use a <strong>⚡ Energy Shield</strong> to protect your streak!
+    </p>`;
+  } else if (type === 'shield') {
+    title = '⚡ Energy Shields';
+    body = `<p style="font-size:20px; line-height:1.5; margin-bottom:14px;">
+      Energy Shields protect your streak when life gets busy.
+    </p>
+    <p style="font-size:20px; line-height:1.5; margin-bottom:14px;">
+      <strong>You have:</strong> ${state.freezes} shield${state.freezes === 1 ? '' : 's'}
+    </p>
+    <p style="font-size:20px; line-height:1.5;">
+      If you miss a day, one shield is used automatically so your streak keeps going. You earn new shields by completing weekly goals!
+    </p>`;
+  } else { return; }
+
+  // Build a transient modal
+  let m = document.getElementById('hudInfoModal');
+  if (m) m.remove();
+  m = document.createElement('div');
+  m.id = 'hudInfoModal';
+  m.className = 'modal-bg active';
+  m.innerHTML = `<div class="modal" style="max-width: 480px;">
+    <button class="modal-close" onclick="document.getElementById('hudInfoModal').remove()">×</button>
+    <h2 class="modal-title">${title}</h2>
+    <div class="modal-body" style="margin-top:14px;">${body}</div>
+    <button class="btn btn-primary" style="margin-top:18px;width:100%;justify-content:center;" onclick="document.getElementById('hudInfoModal').remove()">GOT IT!</button>
+  </div>`;
+  document.body.appendChild(m);
+}
+
+// m1 fix: ESC key closes any active modal (top-most one)
+document.addEventListener('keydown', function(e) {
+  if (e.key === 'Escape' || e.keyCode === 27) {
+    const activeModals = document.querySelectorAll('.modal-bg.active');
+    if (activeModals.length === 0) return;
+    // Close the last (top-most) one
+    const lastModal = activeModals[activeModals.length - 1];
+    lastModal.classList.remove('active');
+    // Also clean up dynamically created prompt modals
+    if (lastModal.id === 'emailPromptModal') lastModal.remove();
+    if (lastModal.id === 'hudInfoModal') lastModal.remove();
+  }
 });
 
 function copyToClipboard(text) {
