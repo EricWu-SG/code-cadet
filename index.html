@@ -1,0 +1,1883 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="Code Cadet">
+<meta name="theme-color" content="#1a1456">
+<meta name="description" content="Code Cadet: Galaxy Builder — learn vibe coding with AI">
+<link rel="manifest" href="./manifest.json">
+<link rel="apple-touch-icon" href="./apple-touch-icon.png">
+<link rel="icon" type="image/png" sizes="32x32" href="./favicon-32.png">
+<link rel="icon" type="image/png" sizes="16x16" href="./favicon-16.png">
+<title>Code Cadet: Galaxy Builder</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Press+Start+2P&family=Fredoka:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+:root {
+  --space-deep: #0e0a3d; --space-mid: #2a2090; --space-purple: #6b3fc7;
+  --sky-top: #4ec0ff; --gold: #ffd23f; --gold-dark: #e8a800; --coin-shine: #fff5a0;
+  --red: #ee3d3d; --red-dark: #b82020; --blue: #2978f0; --blue-dark: #1a4fb8;
+  --green: #3fcb52; --grass-dark: #2d8a2d; --pipe: #2cb04c; --plasma: #ff2dd1;
+  --bronze: #cd7f32; --silver: #c0c0c0; --diamond: #b9f2ff;
+  --text-dark: #1a1456; --text-light: #ffffff; --shadow: rgba(26, 20, 86, 0.35);
+}
+* { box-sizing: border-box; margin: 0; padding: 0; }
+html, body { font-family: 'Fredoka', system-ui, sans-serif; color: var(--text-dark); min-height: 100vh; overflow-x: hidden; background: linear-gradient(180deg, var(--space-deep) 0%, var(--space-mid) 40%, var(--space-purple) 70%, var(--sky-top) 100%); font-size: 16px; }
+.stars, .stars2 { position: fixed; inset: 0; pointer-events: none; z-index: 0; }
+.stars { background-image: radial-gradient(2px 2px at 20px 30px, #fff, transparent), radial-gradient(2px 2px at 60px 80px, #fff, transparent), radial-gradient(1px 1px at 110px 50px, #fff, transparent), radial-gradient(1px 1px at 180px 120px, #fff, transparent), radial-gradient(2px 2px at 250px 60px, #ffd, transparent), radial-gradient(1px 1px at 320px 180px, #fff, transparent); background-size: 400px 250px; animation: drift 120s linear infinite; opacity: 0.7; }
+.stars2 { background-image: radial-gradient(1px 1px at 50px 100px, #fff, transparent), radial-gradient(1px 1px at 150px 30px, #aff, transparent), radial-gradient(2px 2px at 220px 200px, #fff, transparent); background-size: 350px 280px; animation: drift 180s linear infinite reverse; opacity: 0.5; }
+@keyframes drift { from { transform: translateY(0);} to { transform: translateY(-100vh);} }
+.planet-bg { position: fixed; border-radius: 50%; pointer-events: none; z-index: 0; box-shadow: inset -15px -15px 30px rgba(0,0,0,0.4); }
+.bg-1 { width: 120px; height: 120px; top: 8%; right: 6%; background: radial-gradient(circle at 35% 35%, #ff9966 10%, #d4501c 60%, #7a2810 100%); animation: float 14s ease-in-out infinite; }
+.bg-2 { width: 80px; height: 80px; top: 15%; left: 4%; background: radial-gradient(circle at 35% 35%, #b4dcff 10%, #5a92e0 60%, #2a5ab0 100%); animation: float 17s ease-in-out infinite reverse; }
+@keyframes float { 0%, 100% { transform: translateY(0) rotate(0deg);} 50% { transform: translateY(-20px) rotate(8deg);} }
+.header { position: relative; z-index: 10; padding: 18px 24px 14px; display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 14px; }
+.logo { display: flex; align-items: center; gap: 14px; cursor: pointer; user-select: none; }
+.logo-icon { width: 56px; height: 56px; background: var(--red); border: 4px solid var(--text-dark); border-radius: 12px; display: grid; place-items: center; box-shadow: 0 4px 0 var(--text-dark), inset -3px -3px 0 var(--red-dark); }
+.logo-icon::after { content: '★'; color: var(--gold); font-size: 28px; text-shadow: 2px 2px 0 var(--text-dark); }
+.logo-text { font-family: 'Press Start 2P', cursive; font-size: 16px; color: var(--text-light); text-shadow: 3px 3px 0 var(--text-dark), 5px 5px 0 var(--red-dark); line-height: 1.4; }
+.logo-text .sub { font-size: 9px; color: var(--gold); display: block; margin-top: 4px; text-shadow: 2px 2px 0 var(--text-dark); }
+.hud { display: flex; gap: 10px; flex-wrap: wrap; align-items: center; }
+.hud-item { background: var(--text-dark); border: 3px solid var(--text-light); border-radius: 10px; padding: 8px 12px; display: flex; align-items: center; gap: 8px; font-family: 'Press Start 2P', cursive; font-size: 11px; color: var(--text-light); box-shadow: 0 3px 0 rgba(0,0,0,0.4); cursor: default; }
+.hud-item.tappable { cursor: pointer; }
+.hud-icon { width: 22px; height: 22px; display: grid; place-items: center; font-size: 16px; }
+.coin { background: radial-gradient(circle at 35% 35%, var(--coin-shine), var(--gold) 50%, var(--gold-dark)); border-radius: 50%; box-shadow: inset -2px -2px 0 var(--gold-dark); animation: coinSpin 2s ease-in-out infinite; }
+@keyframes coinSpin { 0%,100% {transform:scaleX(1);} 50% {transform:scaleX(0.3);} }
+.hud-streak { background: linear-gradient(135deg, #ff7a00, var(--red)); }
+.hud-streak.gold { background: linear-gradient(135deg, var(--gold), #ff7a00); animation: flameGlow 2s ease-in-out infinite; }
+@keyframes flameGlow { 0%, 100% { box-shadow: 0 3px 0 rgba(0,0,0,0.4), 0 0 12px var(--gold); } 50% { box-shadow: 0 3px 0 rgba(0,0,0,0.4), 0 0 20px var(--gold); } }
+#hudBackup.backed-up { background: #1f4a1f; border-color: #80ff80; }
+#hudBackup.backed-up span { color: #80ff80; }
+#hudBackup.needs-backup { animation: needBackup 2s ease-in-out infinite; }
+@keyframes needBackup { 0%, 100% { box-shadow: 0 3px 0 rgba(0,0,0,0.4); } 50% { box-shadow: 0 3px 0 rgba(0,0,0,0.4), 0 0 16px var(--red); } }
+.main { position: relative; z-index: 5; max-width: 1280px; margin: 0 auto; padding: 12px 20px 80px; }
+.pet-card { background: linear-gradient(135deg, #fff 0%, #f0f8ff 100%); border: 4px solid var(--text-dark); border-radius: 20px; padding: 24px; margin-bottom: 20px; box-shadow: 0 6px 0 var(--text-dark), 0 8px 20px var(--shadow); display: flex; gap: 24px; align-items: center; }
+@media (max-width: 720px) { .pet-card { flex-direction: column; text-align: center; gap: 18px; } }
+.pet-avatar { width: 180px; height: 180px; flex-shrink: 0; position: relative; cursor: pointer; animation: petBob 3s ease-in-out infinite; }
+@keyframes petBob { 0%,100% {transform: translateY(0);} 50% {transform: translateY(-10px);} }
+.pet-svg { width: 100%; height: 100%; filter: drop-shadow(0 6px 8px rgba(26,20,86,0.3)); }
+.pet-svg .helmet-glass { animation: helmetShine 4s ease-in-out infinite; }
+@keyframes helmetShine { 0%,100% { opacity: 0.4; } 50% { opacity: 0.7; } }
+.pet-svg .eye { animation: blink 5s ease-in-out infinite; transform-origin: center; }
+@keyframes blink { 0%,90%,100% { transform: scaleY(1); } 95% { transform: scaleY(0.1); } }
+.pet-svg .antenna-ball { animation: antennaWave 2s ease-in-out infinite; transform-origin: bottom center; }
+@keyframes antennaWave { 0%,100% { transform: rotate(-5deg); } 50% { transform: rotate(5deg); } }
+.pet-outfit { position: absolute; pointer-events: none; filter: drop-shadow(0 2px 4px rgba(0,0,0,0.4)); z-index: 2; }
+.pet-origin-tag {
+  background: linear-gradient(135deg, var(--plasma), var(--purple, #6b3fc7));
+  color: white; font-family: 'Press Start 2P', cursive; font-size: 8px;
+  padding: 4px 8px; border-radius: 6px; border: 2px solid var(--text-dark);
+  display: inline-block; margin-bottom: 6px; box-shadow: 0 2px 0 var(--text-dark);
+}
+.pet-bubble { flex: 1; position: relative; }
+.pet-name-row { display: flex; align-items: center; gap: 10px; margin-bottom: 8px; flex-wrap: wrap; }
+.pet-name { font-family: 'Press Start 2P', cursive; font-size: 14px; color: var(--blue-dark); }
+.pet-rename { font-size: 11px; background: var(--gold); border: 2px solid var(--text-dark); padding: 4px 8px; border-radius: 6px; cursor: pointer; font-weight: 600; box-shadow: 0 2px 0 var(--text-dark); }
+.pet-msg { font-size: 17px; line-height: 1.5; color: var(--text-dark); font-weight: 500; }
+.pet-msg::before { content: '"'; color: var(--blue); font-weight: 700; }
+.pet-msg::after { content: '"'; color: var(--blue); font-weight: 700; }
+.hero { background: linear-gradient(180deg, #fff 0%, #fef8e0 100%); border: 5px solid var(--text-dark); border-radius: 24px; padding: 24px; margin-bottom: 20px; box-shadow: 0 8px 0 var(--text-dark), 0 12px 30px var(--shadow); position: relative; overflow: hidden; }
+.hero::before { content: ''; position: absolute; top: -40px; right: -40px; width: 180px; height: 180px; background: radial-gradient(circle, var(--gold) 30%, transparent 70%); opacity: 0.3; }
+.hero-tag { display: inline-block; background: var(--red); color: white; font-family: 'Press Start 2P', cursive; font-size: 10px; padding: 6px 12px; border-radius: 6px; border: 3px solid var(--text-dark); box-shadow: 0 3px 0 var(--text-dark); margin-bottom: 14px; }
+.hero-tag.weekend { background: var(--plasma); }
+.hero-title { font-family: 'Press Start 2P', cursive; font-size: 18px; color: var(--text-dark); line-height: 1.5; margin-bottom: 10px; text-shadow: 3px 3px 0 var(--gold); }
+.hero-subtitle { font-size: 16px; color: #555; margin-bottom: 18px; line-height: 1.5; }
+.hero-meta { display: flex; gap: 16px; flex-wrap: wrap; margin-bottom: 18px; font-size: 14px; color: #666; }
+.hero-meta span { display: flex; align-items: center; gap: 4px; }
+.hero-actions { display: flex; gap: 12px; flex-wrap: wrap; position: relative; z-index: 1; }
+.btn { font-family: 'Fredoka', sans-serif; font-weight: 700; font-size: 16px; padding: 14px 22px; border: 4px solid var(--text-dark); border-radius: 12px; cursor: pointer; transition: transform 0.1s, box-shadow 0.1s; display: inline-flex; align-items: center; gap: 10px; text-decoration: none; color: white; min-height: 56px; }
+.btn-primary { background: var(--red); box-shadow: 0 5px 0 var(--red-dark), 0 8px 14px var(--shadow); }
+.btn-primary:active { transform: translateY(4px); box-shadow: 0 1px 0 var(--red-dark); }
+.btn-secondary { background: var(--blue); box-shadow: 0 5px 0 var(--blue-dark), 0 8px 14px var(--shadow); }
+.btn-secondary:active { transform: translateY(4px); box-shadow: 0 1px 0 var(--blue-dark); }
+.btn-success { background: var(--green); box-shadow: 0 5px 0 var(--grass-dark), 0 8px 14px var(--shadow); }
+.btn-success:active { transform: translateY(4px); box-shadow: 0 1px 0 var(--grass-dark); }
+.btn-gold { background: linear-gradient(135deg, var(--gold), #ff9500); color: var(--text-dark); box-shadow: 0 5px 0 var(--gold-dark), 0 8px 14px var(--shadow); }
+.btn-gold:active { transform: translateY(4px); box-shadow: 0 1px 0 var(--gold-dark); }
+.btn-ghost { background: white; color: var(--text-dark); box-shadow: 0 5px 0 #aaa, 0 8px 14px var(--shadow); }
+.btn-ghost:active { transform: translateY(4px); box-shadow: 0 1px 0 #aaa; }
+.section-title { font-family: 'Press Start 2P', cursive; font-size: 16px; color: var(--text-light); text-shadow: 3px 3px 0 var(--text-dark); margin-bottom: 14px; display: flex; align-items: center; gap: 12px; }
+.section-title::before { content: ''; width: 24px; height: 24px; background: var(--gold); border: 3px solid var(--text-dark); border-radius: 6px; box-shadow: 0 3px 0 var(--text-dark); }
+.map-section { margin-bottom: 24px; }
+.weeks { display: grid; grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); gap: 14px; }
+.week-card { background: white; border: 4px solid var(--text-dark); border-radius: 18px; padding: 16px 12px; text-align: center; cursor: pointer; transition: transform 0.15s; box-shadow: 0 6px 0 var(--text-dark), 0 8px 20px var(--shadow); position: relative; overflow: hidden; }
+.week-card.locked-soft { background: #b8c4d4; cursor: not-allowed; opacity: 0.7; }
+.week-card.locked-mystery { background: linear-gradient(135deg, #1a1456, #6b3fc7); color: white; cursor: not-allowed; }
+.week-card.current { background: linear-gradient(180deg, #fff8d0, #ffe070); box-shadow: 0 6px 0 var(--text-dark), 0 0 0 4px var(--gold); animation: pulse 2.5s ease-in-out infinite; }
+@keyframes pulse { 0%, 100% { box-shadow: 0 6px 0 var(--text-dark), 0 0 0 4px var(--gold);} 50% { box-shadow: 0 6px 0 var(--text-dark), 0 0 0 6px var(--gold-dark), 0 0 30px var(--gold);} }
+.week-planet { width: 64px; height: 64px; margin: 0 auto 10px; border-radius: 50%; box-shadow: inset -8px -8px 16px rgba(0,0,0,0.3), 0 3px 0 var(--text-dark); position: relative; }
+.planet-fire { background: radial-gradient(circle at 35% 35%, #ffb070, #d4501c 60%, #7a2810);}
+.planet-water { background: radial-gradient(circle at 35% 35%, #80c8ff, #2978f0 60%, #1a4fb8);}
+.planet-grass { background: radial-gradient(circle at 35% 35%, #90e890, #3fcb52 60%, #1a7a30);}
+.planet-ice { background: radial-gradient(circle at 35% 35%, #d0f0ff, #80c0ff 60%, #4080c0);}
+.planet-sun { background: radial-gradient(circle at 35% 35%, #fff8b0, #ffd23f 60%, #d4a000); box-shadow: inset -8px -8px 16px rgba(0,0,0,0.2), 0 3px 0 var(--text-dark), 0 0 24px var(--gold);}
+.planet-galaxy { background: radial-gradient(circle at 35% 35%, #d090ff, #6b3fc7 50%, #2a1060);}
+.week-card.locked-mystery .week-planet { background: radial-gradient(circle, #444 30%, #1a1456 70%) !important; filter: blur(2px); opacity: 0.6; }
+.week-card.locked-mystery .week-planet::after { content: '?'; position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); font-size: 40px; color: var(--gold); font-family: 'Press Start 2P'; filter: none; text-shadow: 0 0 10px var(--gold); }
+.week-num { font-family: 'Press Start 2P', cursive; font-size: 9px; color: #666; margin-bottom: 4px; }
+.week-card.locked-mystery .week-num { color: var(--gold); }
+.week-name { font-family: 'Press Start 2P', cursive; font-size: 10px; color: var(--text-dark); line-height: 1.4; margin-bottom: 10px; }
+.week-card.locked-mystery .week-name { color: white; }
+.week-progress { height: 10px; background: #e0e6f0; border: 2px solid var(--text-dark); border-radius: 8px; overflow: hidden; }
+.week-progress-fill { height: 100%; background: linear-gradient(90deg, var(--green), var(--gold)); transition: width 0.5s; }
+.week-stats { margin-top: 6px; font-size: 12px; color: #666; font-weight: 600; }
+.quiz-section { margin-bottom: 24px; }
+.quiz-card { background: linear-gradient(135deg, #fff, #e8f4ff); border: 4px solid var(--text-dark); border-radius: 18px; padding: 22px; box-shadow: 0 6px 0 var(--text-dark), 0 8px 20px var(--shadow); }
+.quiz-question { font-family: 'Fredoka', sans-serif; font-weight: 600; font-size: 18px; color: var(--text-dark); margin-bottom: 16px; line-height: 1.5; }
+.topic-tag { display: inline-block; background: var(--blue); color: white; font-family: 'Press Start 2P', cursive; font-size: 9px; padding: 4px 10px; border-radius: 6px; border: 2px solid var(--text-dark); margin-right: 10px; vertical-align: middle; }
+.quiz-options { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+@media (max-width: 720px) { .quiz-options { grid-template-columns: 1fr; } }
+.quiz-option { background: white; border: 3px solid var(--text-dark); border-radius: 12px; padding: 14px 18px; font-family: 'Fredoka', sans-serif; font-weight: 600; font-size: 16px; cursor: pointer; text-align: left; transition: all 0.15s; box-shadow: 0 4px 0 var(--text-dark); color: var(--text-dark); min-height: 56px; display: flex; align-items: center; gap: 10px; }
+.quiz-option:active { transform: translateY(2px); box-shadow: 0 2px 0 var(--text-dark); }
+.quiz-option.correct { background: var(--green); color: white; border-color: var(--grass-dark); animation: correctPulse 0.5s; }
+.quiz-option.wrong { background: var(--red); color: white; border-color: var(--red-dark); animation: wrongShake 0.4s; }
+.quiz-option.disabled { pointer-events: none; opacity: 0.65; }
+.quiz-option.reveal-correct { background: #d4f5d8; border-color: var(--grass-dark); }
+.quiz-option::before { content: attr(data-letter); background: var(--gold); color: var(--text-dark); font-family: 'Press Start 2P', cursive; font-size: 11px; padding: 5px 9px; border-radius: 6px; border: 2px solid var(--text-dark); flex-shrink: 0; }
+@keyframes correctPulse { 0%,100% {transform:scale(1);} 50% {transform:scale(1.05);} }
+@keyframes wrongShake { 0%,100% {transform:translateX(0);} 25% {transform:translateX(-8px);} 75% {transform:translateX(8px);} }
+.quiz-feedback { margin-top: 14px; padding: 14px; border-radius: 10px; font-size: 16px; line-height: 1.6; display: none; }
+.quiz-feedback.active { display: block; }
+.quiz-feedback.success { background: #e8f9e8; border: 2px solid var(--grass-dark); color: var(--text-dark); }
+.quiz-feedback.fail { background: #ffe8e8; border: 2px solid var(--red-dark); color: var(--text-dark); }
+.quiz-feedback strong { color: var(--blue-dark); }
+.lesson-flow { display: grid; gap: 16px; }
+.step-card { background: white; border: 4px solid var(--text-dark); border-radius: 18px; padding: 22px; box-shadow: 0 6px 0 var(--text-dark), 0 8px 20px var(--shadow); position: relative; }
+.step-card.locked { opacity: 0.5; pointer-events: none; }
+.step-card.done { border-color: var(--green); background: #f0fff0; }
+.step-number { position: absolute; top: -16px; left: 16px; background: var(--gold); color: var(--text-dark); font-family: 'Press Start 2P', cursive; font-size: 11px; padding: 6px 12px; border-radius: 8px; border: 3px solid var(--text-dark); box-shadow: 0 3px 0 var(--text-dark); }
+.step-card.done .step-number { background: var(--green); color: white; }
+.step-title { font-family: 'Press Start 2P', cursive; font-size: 13px; color: var(--text-dark); margin: 10px 0 14px; }
+.step-body { font-size: 16px; line-height: 1.7; color: #333; }
+.step-body p { margin-bottom: 12px; }
+.step-body strong { color: var(--blue-dark); }
+.step-body ul { padding-left: 22px; margin: 8px 0; }
+.step-body li { margin-bottom: 6px; }
+.step-body code { background: #fef0a0; padding: 2px 6px; border-radius: 4px; font-family: 'Press Start 2P', cursive; font-size: 12px; }
+.prompt-builder { background: var(--text-dark); color: #b8e8ff; padding: 18px; border-radius: 12px; font-family: 'Press Start 2P', cursive; font-size: 12px; line-height: 2.2; margin-top: 12px; border: 3px solid var(--gold); }
+.prompt-blank { display: inline-block; background: white; color: var(--text-dark); padding: 4px 8px; border-radius: 4px; min-width: 80px; border: none; font-family: 'Fredoka', sans-serif; font-weight: 600; font-size: 14px; }
+.prompt-blank:focus { outline: 3px solid var(--gold); }
+.prompt-final { background: #1a4fb8; color: white; padding: 14px; border-radius: 10px; font-family: 'Press Start 2P', cursive; font-size: 11px; line-height: 1.8; margin-top: 14px; white-space: pre-wrap; word-wrap: break-word; }
+.input, textarea.input { width: 100%; padding: 12px; border: 3px solid var(--text-dark); border-radius: 10px; font-family: 'Fredoka', sans-serif; font-size: 16px; background: #fef8e0; resize: vertical; }
+.input:focus { outline: none; border-color: var(--blue); }
+.copy-btn { background: var(--gold); color: var(--text-dark); border: 3px solid var(--text-dark); border-radius: 8px; padding: 10px 16px; font-family: 'Press Start 2P', cursive; font-size: 10px; cursor: pointer; box-shadow: 0 3px 0 var(--text-dark); font-weight: 600; }
+.copy-btn:active { transform: translateY(2px); box-shadow: 0 1px 0 var(--text-dark); }
+.panel { background: white; border: 4px solid var(--text-dark); border-radius: 18px; padding: 20px; box-shadow: 0 6px 0 var(--text-dark), 0 8px 20px var(--shadow); }
+.panel-title { font-family: 'Press Start 2P', cursive; font-size: 13px; color: var(--text-dark); margin-bottom: 14px; display: flex; align-items: center; gap: 10px; }
+.panel-icon { width: 24px; height: 24px; border-radius: 6px; display: grid; place-items: center; font-size: 14px; border: 2px solid var(--text-dark); }
+.two-col { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; margin-bottom: 24px; }
+@media (max-width: 900px) { .two-col { grid-template-columns: 1fr; } }
+.note-list, .log-list { margin-top: 14px; max-height: 240px; overflow-y: auto; padding-right: 4px; }
+.note-item { background: #f0f7ff; border: 2px solid var(--blue); border-radius: 10px; padding: 10px 12px; margin-bottom: 8px; font-size: 15px; line-height: 1.5; }
+.note-date { font-family: 'Press Start 2P', cursive; font-size: 9px; color: var(--blue-dark); margin-bottom: 4px; }
+.log-entry { background: #fefaf0; border: 3px solid var(--text-dark); border-radius: 12px; padding: 12px; margin-bottom: 10px; font-size: 14px; }
+.log-prompt { background: #fff5e0; border-left: 4px solid var(--red); padding: 8px 10px; border-radius: 6px; margin-bottom: 6px; line-height: 1.5; }
+.log-reply { background: #e0f0ff; border-left: 4px solid var(--blue); padding: 8px 10px; border-radius: 6px; line-height: 1.5; max-height: 120px; overflow-y: auto; }
+.log-meta { font-family: 'Press Start 2P', cursive; font-size: 8px; color: var(--text-dark); margin-bottom: 6px; display: flex; justify-content: space-between; }
+.projects-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(220px, 1fr)); gap: 14px; margin-top: 14px; }
+.project-card { background: white; border: 3px solid var(--text-dark); border-radius: 12px; padding: 14px; box-shadow: 0 4px 0 var(--text-dark); }
+.project-card h5 { font-family: 'Press Start 2P', cursive; font-size: 11px; margin-bottom: 8px; color: var(--text-dark); }
+.project-card p { font-size: 14px; color: #555; line-height: 1.5; margin-bottom: 10px; }
+.project-card a { color: var(--blue); font-weight: 600; text-decoration: none; font-size: 14px; }
+.modal-bg { display: none; position: fixed; inset: 0; background: rgba(26, 20, 86, 0.85); z-index: 1000; align-items: center; justify-content: center; padding: 20px; }
+.modal-bg.active { display: flex; }
+.modal { background: white; border: 5px solid var(--text-dark); border-radius: 20px; padding: 28px; max-width: 720px; width: 100%; max-height: 90vh; overflow-y: auto; box-shadow: 0 10px 0 var(--text-dark), 0 15px 40px rgba(0,0,0,0.5); position: relative; }
+.modal-close { position: absolute; top: 14px; right: 14px; background: var(--red); color: white; border: 3px solid var(--text-dark); width: 40px; height: 40px; border-radius: 8px; font-size: 20px; cursor: pointer; box-shadow: 0 3px 0 var(--text-dark); font-weight: bold; }
+.modal h2 { font-family: 'Press Start 2P', cursive; font-size: 18px; margin-bottom: 16px; color: var(--text-dark); }
+.modal h3 { font-family: 'Press Start 2P', cursive; font-size: 13px; margin: 16px 0 10px; color: var(--blue-dark); }
+.modal p { font-size: 16px; line-height: 1.6; margin-bottom: 10px; }
+.parent-dashboard { background: linear-gradient(180deg, #fef8e0, #fff); border: 5px solid var(--text-dark); border-radius: 20px; padding: 28px; margin-bottom: 24px; box-shadow: 0 8px 0 var(--text-dark), 0 12px 30px var(--shadow); position: relative; }
+.parent-badge { position: absolute; top: -14px; left: 24px; background: linear-gradient(135deg, #ff7a00, #ff2dd1); color: white; font-family: 'Press Start 2P', cursive; font-size: 10px; padding: 6px 14px; border: 3px solid var(--text-dark); border-radius: 8px; box-shadow: 0 3px 0 var(--text-dark); }
+.stats-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(130px, 1fr)); gap: 12px; margin-bottom: 18px; }
+.stat { background: white; border: 3px solid var(--text-dark); border-radius: 12px; padding: 12px; text-align: center; box-shadow: 0 3px 0 var(--text-dark); }
+.stat-num { font-family: 'Press Start 2P', cursive; font-size: 22px; color: var(--red); text-shadow: 2px 2px 0 var(--gold); }
+.stat-label { font-family: 'Press Start 2P', cursive; font-size: 8px; color: #666; margin-top: 6px; }
+.levelup { position: fixed; inset: 0; pointer-events: none; z-index: 2000; display: none; align-items: center; justify-content: center; }
+.levelup.active { display: flex; animation: levelupAnim 2.5s ease-out forwards; }
+@keyframes levelupAnim { 0% { opacity: 0; transform: scale(0.5); } 20% { opacity: 1; transform: scale(1.1); } 50% { opacity: 1; transform: scale(1); } 100% { opacity: 0; transform: scale(1.2); } }
+.levelup-box { background: linear-gradient(135deg, var(--gold), #ff7a00); border: 6px solid var(--text-dark); border-radius: 24px; padding: 40px 60px; text-align: center; box-shadow: 0 10px 0 var(--text-dark), 0 20px 60px rgba(0,0,0,0.6); }
+.levelup-box h1 { font-family: 'Press Start 2P', cursive; font-size: 28px; color: white; text-shadow: 4px 4px 0 var(--text-dark); margin-bottom: 16px; }
+.levelup-box p { font-family: 'Press Start 2P', cursive; font-size: 13px; color: white; text-shadow: 2px 2px 0 var(--text-dark); }
+.shop-tabs { display: flex; gap: 8px; margin-bottom: 16px; flex-wrap: wrap; }
+.shop-tab { background: white; border: 3px solid var(--text-dark); padding: 10px 16px; border-radius: 10px; font-family: 'Press Start 2P', cursive; font-size: 11px; cursor: pointer; box-shadow: 0 3px 0 var(--text-dark); }
+.shop-tab.active { background: var(--gold); }
+.shop-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(110px, 1fr)); gap: 12px; }
+.shop-item { background: white; border: 3px solid var(--text-dark); border-radius: 12px; padding: 12px 8px; text-align: center; cursor: pointer; box-shadow: 0 4px 0 var(--text-dark); transition: transform 0.1s; }
+.shop-item:active { transform: translateY(2px); box-shadow: 0 2px 0 var(--text-dark); }
+.shop-item.owned { background: #e8f9e8; }
+.shop-item.equipped { background: var(--gold); border-color: var(--red); }
+.shop-item.locked { opacity: 0.5; cursor: not-allowed; }
+.shop-emoji { font-size: 40px; margin-bottom: 6px; }
+.shop-name { font-size: 13px; font-weight: 600; margin-bottom: 4px; }
+.shop-price { font-family: 'Press Start 2P', cursive; font-size: 10px; color: var(--gold-dark); display: flex; align-items: center; justify-content: center; gap: 4px; }
+.shop-price.locked { color: var(--red); }
+.hero-cards-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(140px, 1fr)); gap: 14px; }
+.hero-card { background: linear-gradient(135deg, #fff, #fef8e0); border: 4px solid var(--text-dark); border-radius: 14px; padding: 12px; text-align: center; cursor: pointer; box-shadow: 0 4px 0 var(--text-dark); position: relative; min-height: 180px; }
+.hero-card.unowned { background: #d0d0d0; cursor: pointer; }
+.hero-card.unowned .hero-card-emoji { filter: grayscale(1) brightness(0.5); }
+.hero-card.unowned .hero-card-name { color: #888; }
+.hero-card.rarity-rare { background: linear-gradient(135deg, #fff, #d4e8ff); border-color: var(--blue); }
+.hero-card.rarity-epic { background: linear-gradient(135deg, #fff, #f5d4ff); border-color: var(--plasma); }
+.hero-card.rarity-legendary { background: linear-gradient(135deg, #fff, #ffd23f); border-color: var(--gold-dark); animation: legendaryGlow 3s ease-in-out infinite; }
+@keyframes legendaryGlow { 0%,100% { box-shadow: 0 4px 0 var(--text-dark), 0 0 20px var(--gold); } 50% { box-shadow: 0 4px 0 var(--text-dark), 0 0 35px var(--gold); } }
+.hero-card-emoji { font-size: 48px; margin-bottom: 6px; }
+.hero-card-name { font-family: 'Press Start 2P', cursive; font-size: 10px; color: var(--text-dark); line-height: 1.4; margin-bottom: 6px; white-space: pre-line; }
+.hero-card-quote { font-size: 12px; color: #666; font-style: italic; line-height: 1.4; }
+.rarity-badge { position: absolute; top: 6px; right: 6px; font-family: 'Press Start 2P', cursive; font-size: 7px; padding: 3px 6px; border-radius: 4px; border: 1px solid var(--text-dark); }
+.rarity-badge.common { background: #ccc; }
+.rarity-badge.rare { background: var(--blue); color: white; }
+.rarity-badge.epic { background: var(--plasma); color: white; }
+.rarity-badge.legendary { background: var(--gold); color: var(--text-dark); }
+.hero-detail-emoji { font-size: 100px; text-align: center; margin: 14px 0; }
+.hero-detail-name { font-family: 'Press Start 2P', cursive; font-size: 18px; text-align: center; margin-bottom: 8px; color: var(--text-dark); }
+.hero-detail-title { text-align: center; color: #666; font-size: 15px; margin-bottom: 16px; }
+.hero-detail-quote { background: var(--gold); color: var(--text-dark); padding: 14px; border-radius: 10px; border: 3px solid var(--text-dark); font-style: italic; font-size: 16px; line-height: 1.5; text-align: center; margin-bottom: 16px; box-shadow: 0 3px 0 var(--text-dark); }
+.hero-detail-story { background: #f0f7ff; padding: 16px; border-radius: 10px; border: 2px solid var(--blue); font-size: 16px; line-height: 1.7; }
+.empty { text-align: center; color: #888; font-size: 15px; padding: 20px; }
+.hidden { display: none !important; }
+.small-text { font-size: 13px; color: #666; }
+.muted { color: #888; }
+.self-check {
+  display: flex; align-items: center; gap: 12px;
+  padding: 14px 16px; background: white;
+  border: 3px solid var(--text-dark); border-radius: 12px;
+  cursor: pointer; box-shadow: 0 3px 0 var(--text-dark);
+  transition: all 0.15s; font-size: 16px; line-height: 1.5; color: var(--text-dark);
+  min-height: 56px;
+}
+.self-check:active { transform: translateY(2px); box-shadow: 0 1px 0 var(--text-dark); }
+.self-check.checked { background: #e8f9e8; border-color: var(--grass-dark); }
+.self-check-box {
+  flex-shrink: 0; width: 28px; height: 28px;
+  border: 3px solid var(--text-dark); border-radius: 6px;
+  background: white; display: grid; place-items: center;
+  font-family: 'Press Start 2P', cursive; font-size: 14px; color: var(--green); font-weight: bold;
+}
+.self-check.checked .self-check-box { background: var(--green); color: white; }
+.self-check-text { flex: 1; }
+.confetti { position: fixed; width: 10px; height: 10px; pointer-events: none; z-index: 1999; animation: confettiFall 3s ease-out forwards; }
+@keyframes confettiFall { 0% { transform: translateY(-100vh) rotate(0); opacity: 1; } 100% { transform: translateY(100vh) rotate(720deg); opacity: 0; } }
+@media (hover: none) and (pointer: coarse) {
+  .btn, .copy-btn, .quiz-option, .week-card, .shop-item, .hero-card { min-height: 56px; }
+  button, .btn, .copy-btn, .quiz-option, .week-card, .shop-item, .hero-card, .logo, .hud-item { -webkit-user-select: none; user-select: none; -webkit-tap-highlight-color: transparent; }
+  input, textarea { font-size: 16px !important; }
+}
+@media (min-width: 1024px) and (max-width: 1366px) {
+  .main { max-width: 1280px; padding: 16px 32px 80px; }
+  .btn { padding: 16px 26px; font-size: 17px; }
+  .hero-title { font-size: 22px; }
+  .step-body { font-size: 17px; }
+  .quiz-question { font-size: 19px; }
+}
+@media (min-width: 1024px) and (orientation: landscape) {
+  .weeks { grid-template-columns: repeat(6, 1fr); gap: 12px; }
+}
+::-webkit-scrollbar { width: 12px; height: 12px; }
+::-webkit-scrollbar-track { background: #e0e6f0; border-radius: 6px; }
+::-webkit-scrollbar-thumb { background: var(--blue); border-radius: 6px; border: 2px solid #e0e6f0; }
+</style>
+</head>
+<body>
+
+<div class="stars"></div>
+<div class="stars2"></div>
+<div class="planet-bg bg-1"></div>
+<div class="planet-bg bg-2"></div>
+
+<header class="header">
+  <div class="logo" id="logoBtn">
+    <div class="logo-icon"></div>
+    <div class="logo-text">CADET ETHAN<span class="sub">★ GALAXY BUILDER ★</span></div>
+  </div>
+  <div class="hud">
+    <div class="hud-item"><div class="hud-icon coin"></div><span id="hudCoins">0</span></div>
+    <div class="hud-item hud-streak" id="hudStreakBox" title="Daily streak"><div class="hud-icon">🔥</div><span id="hudStreak">0</span></div>
+    <div class="hud-item" title="Energy Shields protect your streak"><div class="hud-icon">⚡</div><span id="hudFreeze">0</span></div>
+    <div class="hud-item"><div class="hud-icon">⭐</div><span id="hudStars">0</span></div>
+    <div class="hud-item tappable" onclick="openModal('mapModal')"><div class="hud-icon">🗺</div><span>Week <span id="hudWeek">1</span></span></div>
+    <div class="hud-item tappable" id="hudBackup" onclick="manualBackup()"><div class="hud-icon">✉</div><span id="hudBackupStatus">No backup</span></div>
+  </div>
+</header>
+
+<main class="main">
+
+  <section class="parent-dashboard hidden" id="parentDashboard">
+    <div class="parent-badge">★ DAD MODE ★</div>
+    <h2 style="font-family:'Press Start 2P';font-size:18px;margin:10px 0 18px;">Mission Control — Ethan</h2>
+    <div class="stats-grid">
+      <div class="stat"><div class="stat-num" id="statStreak">0</div><div class="stat-label">Streak</div></div>
+      <div class="stat"><div class="stat-num" id="statLessons">0</div><div class="stat-label">Lessons</div></div>
+      <div class="stat"><div class="stat-num" id="statProjects">0</div><div class="stat-label">Builds</div></div>
+      <div class="stat"><div class="stat-num" id="statPrompts">0</div><div class="stat-label">Prompts</div></div>
+      <div class="stat"><div class="stat-num" id="statMinutes">0</div><div class="stat-label">Minutes</div></div>
+      <div class="stat"><div class="stat-num" id="statCards">0</div><div class="stat-label">Cards</div></div>
+    </div>
+    <h3 style="font-family:'Press Start 2P';font-size:12px;margin:18px 0 10px;">Recent Notes</h3>
+    <div id="parentNotes" class="note-list"></div>
+    <h3 style="font-family:'Press Start 2P';font-size:12px;margin:18px 0 10px;">Recent Prompts</h3>
+    <div id="parentPrompts" class="log-list"></div>
+    <div style="display:flex; gap:10px; margin-top:18px; flex-wrap:wrap;">
+      <button class="btn btn-success" onclick="exportData()">💾 EXPORT JSON</button>
+      <button class="btn btn-secondary" onclick="document.getElementById('importInput').click()">📥 IMPORT</button>
+      <input type="file" id="importInput" accept=".json,.txt" hidden onchange="importData(event)">
+      <button class="btn btn-secondary" onclick="importFromPaste()">📋 PASTE EMAIL</button>
+      <button class="btn btn-ghost" onclick="hideParentDashboard()">CLOSE</button>
+      <button class="btn" style="background:#777" onclick="resetAll()">⚠ RESET</button>
+    </div>
+    <div style="margin-top:16px;padding:12px;background:#fef0a0;border:2px dashed var(--text-dark);border-radius:10px;font-size:14px;line-height:1.6;">
+      <strong>📧 Backup Email:</strong> <code style="background:white;padding:2px 6px;border-radius:4px;" id="parentEmailDisplay">—</code><br>
+      <strong>Last backup:</strong> <span id="lastBackupDisplay">never</span> · <strong>Total:</strong> <span id="backupCountDisplay">0</span>
+    </div>
+  </section>
+
+  <section class="pet-card">
+    <div class="pet-avatar" id="petAvatar" onclick="petPoke()">
+      <svg class="pet-svg" id="petSvg" viewBox="0 0 200 200" xmlns="http://www.w3.org/2000/svg">
+        <!-- Helmet outer glow -->
+        <circle cx="100" cy="105" r="78" fill="rgba(180,220,255,0.15)" />
+        <!-- Body shadow -->
+        <ellipse cx="100" cy="178" rx="55" ry="8" fill="rgba(26,20,86,0.25)" />
+        <!-- Antennas -->
+        <g class="antenna-ball">
+          <line x1="78" y1="45" x2="70" y2="22" stroke="#1a1456" stroke-width="3" stroke-linecap="round"/>
+          <circle cx="68" cy="20" r="6" fill="#ff2dd1" stroke="#1a1456" stroke-width="2.5"/>
+          <circle cx="66" cy="18" r="2" fill="#fff" opacity="0.8"/>
+        </g>
+        <g class="antenna-ball" style="animation-delay: -1s;">
+          <line x1="122" y1="45" x2="130" y2="22" stroke="#1a1456" stroke-width="3" stroke-linecap="round"/>
+          <circle cx="132" cy="20" r="6" fill="#ffd23f" stroke="#1a1456" stroke-width="2.5"/>
+          <circle cx="130" cy="18" r="2" fill="#fff" opacity="0.8"/>
+        </g>
+        <!-- Body (green alien) -->
+        <ellipse cx="100" cy="120" rx="55" ry="60" fill="#5fce5f" stroke="#1a1456" stroke-width="4"/>
+        <!-- Body highlight -->
+        <ellipse cx="80" cy="100" rx="22" ry="32" fill="#8eea8e" opacity="0.6"/>
+        <!-- Belly patch -->
+        <ellipse cx="100" cy="140" rx="32" ry="28" fill="#c5f4c5" stroke="#1a1456" stroke-width="2.5" opacity="0.85"/>
+        <!-- Arms -->
+        <ellipse cx="48" cy="135" rx="14" ry="20" fill="#5fce5f" stroke="#1a1456" stroke-width="3" transform="rotate(-15 48 135)"/>
+        <ellipse cx="152" cy="135" rx="14" ry="20" fill="#5fce5f" stroke="#1a1456" stroke-width="3" transform="rotate(15 152 135)"/>
+        <!-- Helmet bubble (glass) -->
+        <circle cx="100" cy="95" r="60" fill="none" stroke="#1a1456" stroke-width="4"/>
+        <circle class="helmet-glass" cx="100" cy="95" r="60" fill="url(#helmetGrad)" opacity="0.5"/>
+        <!-- Helmet rim (bottom) -->
+        <ellipse cx="100" cy="148" rx="60" ry="10" fill="#c0d8ee" stroke="#1a1456" stroke-width="3.5"/>
+        <ellipse cx="100" cy="146" rx="60" ry="6" fill="#e8f4ff"/>
+        <!-- Eyes (big and cute) -->
+        <g class="eye">
+          <ellipse cx="82" cy="92" rx="13" ry="16" fill="#1a1456"/>
+          <circle cx="86" cy="86" r="5" fill="#fff"/>
+          <circle cx="79" cy="96" r="2" fill="#fff" opacity="0.7"/>
+        </g>
+        <g class="eye" style="animation-delay: -0.1s;">
+          <ellipse cx="118" cy="92" rx="13" ry="16" fill="#1a1456"/>
+          <circle cx="122" cy="86" r="5" fill="#fff"/>
+          <circle cx="115" cy="96" r="2" fill="#fff" opacity="0.7"/>
+        </g>
+        <!-- Cheek blush -->
+        <circle cx="70" cy="118" r="6" fill="#ff7a9e" opacity="0.6"/>
+        <circle cx="130" cy="118" r="6" fill="#ff7a9e" opacity="0.6"/>
+        <!-- Mouth (small smile) -->
+        <path d="M 88 118 Q 100 128 112 118" fill="none" stroke="#1a1456" stroke-width="3" stroke-linecap="round"/>
+        <!-- Helmet glass shine -->
+        <ellipse cx="78" cy="68" rx="14" ry="22" fill="#fff" opacity="0.5"/>
+        <ellipse cx="115" cy="62" rx="5" ry="9" fill="#fff" opacity="0.7"/>
+        <!-- Gradients -->
+        <defs>
+          <radialGradient id="helmetGrad" cx="35%" cy="30%">
+            <stop offset="0%" stop-color="#e0f0ff" stop-opacity="0.8"/>
+            <stop offset="100%" stop-color="#80c0ff" stop-opacity="0.2"/>
+          </radialGradient>
+        </defs>
+      </svg>
+      <span class="pet-outfit" id="petOutfit"></span>
+    </div>
+    <div class="pet-bubble">
+      <div class="pet-name-row">
+        <span class="pet-origin-tag">FROM PLANET CODEON</span>
+      </div>
+      <div class="pet-name-row">
+        <span class="pet-name" id="petName">Pixel</span>
+        <button class="pet-rename" onclick="renamePet()">✎ Rename</button>
+        <button class="pet-rename" onclick="openModal('shopModal')" style="background:var(--blue);color:white;">🛍 Shop</button>
+        <button class="pet-rename" onclick="openModal('heroModal')" style="background:var(--plasma);color:white;">⭐ Heroes</button>
+      </div>
+      <div class="pet-msg" id="petMessage">Loading your mission...</div>
+    </div>
+  </section>
+
+  <section class="hero">
+    <div class="hero-tag" id="heroTag">TODAY'S MISSION</div>
+    <h1 class="hero-title" id="todayTitle">Loading...</h1>
+    <p class="hero-subtitle" id="todaySubtitle">Get ready, Ethan!</p>
+    <div class="hero-meta" id="heroMeta"></div>
+    <div class="hero-actions">
+      <button class="btn btn-primary" onclick="startMission()">🚀 START MISSION</button>
+      <button class="btn btn-ghost" onclick="openModal('mapModal')">🗺 SEE MAP</button>
+    </div>
+  </section>
+
+  <section class="quiz-section">
+    <h2 class="section-title">⚡ POWER-UP QUIZ</h2>
+    <div class="quiz-card" id="quizCard">
+      <div class="quiz-question" id="quizQuestion"></div>
+      <div class="quiz-options" id="quizOptions"></div>
+      <div class="quiz-feedback" id="quizFeedback"></div>
+    </div>
+  </section>
+
+  <section class="two-col">
+    <div class="panel">
+      <h3 class="panel-title"><span class="panel-icon" style="background:#fef0a0;">📓</span>TODAY'S NOTE</h3>
+      <p class="small-text" style="margin-bottom:10px;">One English sentence: What did you learn?</p>
+      <textarea class="input" id="noteInput" placeholder="Today I learned..."></textarea>
+      <button class="copy-btn" onclick="saveNote()" style="margin-top:10px;">★ SAVE NOTE (+2)</button>
+      <div class="note-list" id="noteList"></div>
+    </div>
+    <div class="panel">
+      <h3 class="panel-title"><span class="panel-icon" style="background:#c0e8ff;">💬</span>PROMPT LOG</h3>
+      <p class="small-text" style="margin-bottom:10px;">What did you ask & what did Claude say?</p>
+      <textarea class="input" id="logPromptInput" placeholder="What did YOU ask Claude?" style="background:#fff5e0;margin-bottom:8px;"></textarea>
+      <textarea class="input" id="logReplyInput" placeholder="What did Claude say back? (just a piece)" style="background:#e0f0ff;"></textarea>
+      <button class="copy-btn" onclick="savePromptLog()" style="margin-top:10px;">★ SAVE TO LOG (+3)</button>
+      <div class="log-list" id="logList"></div>
+    </div>
+  </section>
+
+  <section class="panel" style="margin-bottom:24px;">
+    <h3 class="panel-title">
+      <span class="panel-icon" style="background:#ffd6a0;">🛠️</span>MY BUILDS
+      <button class="copy-btn" onclick="showBuildsHelp()" style="margin-left:auto;background:var(--blue);color:white;">❓ WHAT IS THIS?</button>
+    </h3>
+    <p class="small-text" style="margin-bottom:10px;">Your collection of things you built. Every project = a trophy!</p>
+    <button class="copy-btn" onclick="toggleAddProject()">+ ADD A NEW BUILD (+5)</button>
+    <div id="addProjectForm" class="hidden" style="margin-top:12px;display:grid;gap:10px;">
+      <input type="text" id="projTitle" class="input" placeholder="Project name (e.g. Space Quiz Game)">
+      <input type="text" id="projDesc" class="input" placeholder="What does it do?">
+      <input type="text" id="projLink" class="input" placeholder="Link (optional)">
+      <button class="copy-btn" onclick="saveProject()">★ SAVE BUILD</button>
+    </div>
+    <div class="projects-grid" id="projectsGrid"></div>
+  </section>
+
+</main>
+
+<div class="modal-bg" id="mapModal">
+  <div class="modal" style="max-width:900px;">
+    <button class="modal-close" onclick="closeModal('mapModal')">×</button>
+    <h2>🗺 GALAXY MAP</h2>
+    <p>You unlock new worlds by finishing previous weeks. Hidden weeks reveal after Week 3!</p>
+    <div class="weeks" id="weeksGrid" style="margin-top:18px;"></div>
+  </div>
+</div>
+
+<div class="modal-bg" id="missionModal">
+  <div class="modal" style="max-width:780px;">
+    <button class="modal-close" onclick="closeModal('missionModal')">×</button>
+    <h2 id="missionTitle">Mission</h2>
+    <p id="missionIntro" style="margin-bottom:16px;"></p>
+    <div class="lesson-flow" id="lessonFlow"></div>
+  </div>
+</div>
+
+<div class="modal-bg" id="shopModal">
+  <div class="modal" style="max-width:680px;">
+    <button class="modal-close" onclick="closeModal('shopModal')">×</button>
+    <h2>🛍 PIXEL'S CLOSET</h2>
+    <p>Dress up your space buddy! Spend coins on outfits. Tap to equip.</p>
+    <div class="shop-tabs">
+      <div class="shop-tab active" data-cat="hat" onclick="setShopTab('hat')">Hats</div>
+      <div class="shop-tab" data-cat="vehicle" onclick="setShopTab('vehicle')">Rides</div>
+      <div class="shop-tab" data-cat="gear" onclick="setShopTab('gear')">Gear</div>
+      <div class="shop-tab" data-cat="rare" onclick="setShopTab('rare')">⭐ Rare</div>
+    </div>
+    <div class="shop-grid" id="shopGrid"></div>
+  </div>
+</div>
+
+<div class="modal-bg" id="heroModal">
+  <div class="modal" style="max-width:780px;">
+    <button class="modal-close" onclick="closeModal('heroModal')">×</button>
+    <h2>⭐ HALL OF HEROES</h2>
+    <p>Famous makers, scientists, and dreamers. Tap an unlocked one to read their story!</p>
+    <div style="margin:14px 0; padding:12px; background:#f0f7ff; border:2px solid var(--blue); border-radius:10px; display:flex; gap:12px; align-items:center; flex-wrap:wrap;">
+      <span style="font-size:32px;">🎴</span>
+      <div style="flex:1; min-width:200px;">
+        <strong>How to unlock:</strong> Complete missions to automatically earn themed Hero Cards related to what you learned!
+      </div>
+      <span class="small-text">Collected: <strong id="heroCount">0</strong> / <span id="heroTotal">15</span></span>
+    </div>
+    <div class="hero-cards-grid" id="heroGrid"></div>
+  </div>
+</div>
+
+<div class="modal-bg" id="heroDetailModal">
+  <div class="modal" style="max-width:540px;">
+    <button class="modal-close" onclick="closeModal('heroDetailModal')">×</button>
+    <div id="heroDetailContent"></div>
+  </div>
+</div>
+
+<div class="modal-bg" id="parentModal">
+  <div class="modal" style="max-width:420px;">
+    <button class="modal-close" onclick="closeModal('parentModal')">×</button>
+    <h2>🔐 Parent Access</h2>
+    <p>Enter the secret code:</p>
+    <input type="password" id="parentPass" class="input" placeholder="••••" style="font-family:'Press Start 2P';font-size:14px;">
+    <p class="small-text" style="margin-top:10px;">Hint: Default is <code style="background:#fef0a0;padding:2px 6px;border-radius:4px;">eric2026</code></p>
+    <button class="btn btn-primary" style="margin-top:14px;width:100%;justify-content:center;" onclick="checkParentPass()">UNLOCK</button>
+  </div>
+</div>
+
+<div class="modal-bg" id="streakModal">
+  <div class="modal" style="max-width:480px;text-align:center;">
+    <div id="streakModalContent"></div>
+    <button class="btn btn-primary" style="margin-top:14px;width:100%;justify-content:center;" onclick="closeModal('streakModal')">LET'S GO!</button>
+  </div>
+</div>
+
+<div class="modal-bg" id="buildsHelpModal">
+  <div class="modal" style="max-width:520px;">
+    <button class="modal-close" onclick="closeModal('buildsHelpModal')">×</button>
+    <h2>🛠 What's MY BUILDS?</h2>
+    <p>Every time you make something cool with Claude — a webpage, a game, a quiz — you should add it here!</p>
+    <h3>Why?</h3>
+    <p>It's your <strong>trophy shelf</strong>. After 6 weeks you'll look back and see how far you came. Real builders save their work.</p>
+    <h3>How?</h3>
+    <ul style="padding-left:22px;line-height:1.8;">
+      <li>Give it a fun name ("Space Dice Roller v1")</li>
+      <li>Write what it does in one sentence</li>
+      <li>Paste the Claude artifact link (optional)</li>
+      <li>Get <strong>+5 coins</strong> every time you save one!</li>
+    </ul>
+    <button class="btn btn-success" style="margin-top:16px;width:100%;justify-content:center;" onclick="closeModal('buildsHelpModal'); toggleAddProject();">+ ADD MY FIRST BUILD</button>
+  </div>
+</div>
+
+<div class="modal-bg" id="welcomeModal">
+  <div class="modal" style="max-width:540px;text-align:center;">
+    <div id="welcomeContent"></div>
+  </div>
+</div>
+
+<div class="levelup" id="levelupOverlay">
+  <div class="levelup-box">
+    <h1 id="levelupTitle">LEVEL UP!</h1>
+    <p id="levelupText">+10 COINS</p>
+  </div>
+</div>
+
+<script>
+const STORAGE_KEY = 'codeCadet_ethan_v3';
+const PARENT_PASSWORD = 'eric2026';
+const PARENT_EMAIL = 'Eudemon547@gmail.com';
+const CADET_NAME = 'Ethan';
+
+const WEEKS = [
+  { id: 1, name: "FIRST CONTACT", theme: "planet-grass", subtitle: "Hello, AI Builder", unlocked: true, description: "Make your first webpages with Claude." },
+  { id: 2, name: "PROMPT FORGE", theme: "planet-water", subtitle: "Power of Words", unlocked: true, description: "Master the 3-part prompt." },
+  { id: 3, name: "WORLDS OF WONDER", theme: "planet-galaxy", subtitle: "Build Stuff You Love", unlocked: true, description: "Build projects you LOVE." },
+  { id: 4, name: "???", theme: "planet-fire", mystery: true, subtitle: "Mystery World", description: "Complete Week 3 to unlock." },
+  { id: 5, name: "???", theme: "planet-sun", mystery: true, subtitle: "Mystery World", description: "Locked." },
+  { id: 6, name: "???", theme: "planet-ice", mystery: true, subtitle: "Mystery World", description: "Locked." }
+];
+
+const LESSONS = {
+  "1-1": { week: 1, day: 1, title: "Your Cosmic Hello",
+    petMsg: "Hey Cadet Ethan! I'm Pixel, your training partner. First mission: make a webpage that says hi — but with a TWIST.",
+    intro: "Build a webpage with your name and your favorite planet. The twist: clicking your name changes the background to a random space color.",
+    rewardCoins: 15,
+    think: { q: "What 3 things does this page need?", options: ["Just my name", "Name + planet + clickable behavior", "Music + video", "Only colors"], correct: 1, explain: "We need ALL 3: name, picture, and click-to-change behavior. Planning first saves time!" },
+    promptBuilder: { template: "GOAL: Build a fun webpage that says \"Hello, {a}\" with a big picture of {b}.\nDETAILS: When I click on my name, the background changes to a random space color (purple, deep blue, black, or galaxy gradient).\nRULES: Use space-themed style. Big text. Make it work on iPad too.",
+      blanks: [ { id: 'a', placeholder: 'Your name', default: 'Ethan' }, { id: 'b', placeholder: 'Favorite planet', default: 'Jupiter' } ] },
+    verify: [
+      { q: "Did your background actually CHANGE when you clicked your name?", options: ["Yes, it works!", "No, nothing happens", "It changed once then stopped"], correct: 0, explain: "If yes, you nailed it! If not, ask Claude: 'My background doesn't change when I click. Can you fix it?'" },
+      { q: "Look at Claude's code. Which part controls the colors? (Ask Claude if unsure!)", options: ["The <h1> tag", "An array or list of color values", "The <body> tag only"], correct: 1, explain: "Random colors come from a LIST of colors. The code picks one each time you click." }
+    ],
+    reflect: { q: "What did you learn today about making a webpage interactive?", options: ["Just adding text is enough", "Buttons or clicks need code to make something happen", "Color doesn't matter"], correct: 1, explain: "Interactivity = code that LISTENS for clicks and then DOES something. That's the magic!" }
+  ,
+    reviewQuiz: { topic: "🌌 REVIEW", q: "Day 1 Review: What makes a webpage INTERACTIVE?", options: ["Pretty colors", "Code that LISTENS for clicks and does stuff", "More text", "Bigger fonts"], correct: 1, explain: "Interactivity = code that LISTENS for events (clicks, taps) and DOES something. That\'s the magic of JavaScript!" }
+  ,
+    themedHeroes: ["tim", "einstein"]
+  },
+  "1-2": { week: 1, day: 2, title: "The Color Lab",
+    petMsg: "Yesterday you built! Today we EXPERIMENT. Scientists try things 3 times to learn — let's do it Cadet style.",
+    intro: "Take yesterday's page. Make Claude give you 3 DIFFERENT color schemes (you choose the moods). Then YOU pick your favorite and tell Claude why.",
+    rewardCoins: 15,
+    think: { q: "Why ask for 3 versions instead of just 1?", options: ["To waste time", "So you can COMPARE and pick the best", "To confuse Claude", "Computers like the number 3"], correct: 1, explain: "Comparing options is how real designers work. v1 vs v2 vs v3 = better choices." },
+    promptBuilder: { template: "Take my page from yesterday. Give me THREE different color schemes:\n1. A {a} mood\n2. A {b} mood\n3. A {c} mood\nShow me the CSS for each. I'll pick my favorite.",
+      blanks: [ { id: 'a', placeholder: 'mood 1', default: 'scary space' }, { id: 'b', placeholder: 'mood 2', default: 'happy sunny' }, { id: 'c', placeholder: 'mood 3', default: 'mysterious galaxy' } ] },
+    verify: [
+      { q: "Did Claude give you 3 clearly different versions?", options: ["Yes, very different", "They look almost the same", "Only got 1"], correct: 0, explain: "If they look the same, ask: 'Make them MORE different — version 1 should be scary, version 3 should be peaceful.'" },
+      { q: "In CSS, which property changes the background color?", options: ["color", "background-color", "font-family", "border"], correct: 1, explain: "background-color sets the background. color sets the text color. Easy to mix up!" }
+    ],
+    reflect: { q: "What's a 'mood' in design?", options: ["The vibe or feeling colors give you", "A type of code", "An error", "A planet"], correct: 0, explain: "Colors carry emotion. Red = exciting. Blue = calm. Black = mysterious. Designers play with this!" }
+  ,
+    reviewQuiz: { topic: "🎨 REVIEW", q: "Color Lab Review: Why ask Claude for THREE color options instead of one?", options: ["No reason", "To compare and pick the best", "To waste tokens", "It looks cooler"], correct: 1, explain: "Comparing 3 options = better design choices. Real designers always make multiple versions before picking one!" }
+  ,
+    themedHeroes: ["feynman", "mae"]
+  },
+  "1-3": { week: 1, day: 3, title: "The Counter Button",
+    petMsg: "Time to make something COUNT! In games, scores go up. In code, variables hold numbers. Let's combine them.",
+    intro: "Build a button that says 'Add a star to the galaxy ⭐'. Every click adds one star, and the total count shown big at the top.",
+    rewardCoins: 15,
+    think: { q: "What does the computer need to REMEMBER between clicks?", options: ["Nothing", "How many stars there are right now", "The user's name", "The time"], correct: 1, explain: "Memory = VARIABLES. The 'star count' is stored in a variable that goes UP each click." },
+    promptBuilder: { template: "Build a webpage with:\n- A title \"My Galaxy: {a} stars\" (where {a} starts at 0)\n- A big button that says \"⭐ Add a star!\"\n- Every click: the number goes up by 1 AND a tiny ⭐ emoji appears on screen at a random spot\nRULES: Dark space background. Make it satisfying to click!",
+      blanks: [ { id: 'a', placeholder: 'count variable', default: '0' } ] },
+    verify: [
+      { q: "After Claude builds it: where in the code does the counter LIVE?", options: ["Inside the HTML <h1>", "In a JavaScript variable (like `let stars = 0;`)", "In the CSS", "In a picture"], correct: 1, explain: "Variables live in JS. The HTML just SHOWS the variable's value. Two different jobs!" },
+      { q: "What happens to the stars if you reload the page?", options: ["They stay", "They reset to 0 (memory is wiped)", "They double"], correct: 1, explain: "Without saving (localStorage), variables RESET on reload. That's why your progress here is saved specially!" }
+    ],
+    reflect: { q: "What's a 'variable' in your own words?", options: ["A bug", "A labeled box that holds a value you can change", "A planet", "A type of error"], correct: 1, explain: "EXACTLY. Variables are labeled boxes: `stars = 5`. Change what's inside whenever you want!" }
+  ,
+    reviewQuiz: { topic: "💻 REVIEW", q: "Counter Review: What's a 'variable' in code?", options: ["A bug", "A labeled box that holds a value you can change", "A type of color", "A planet"], correct: 1, explain: "Variables are labeled boxes. `stars = 5`. Change what\'s inside whenever you want — that\'s how the counter works!" }
+  ,
+    themedHeroes: ["lovelace", "shannon"]
+  },
+  "1-4": { week: 1, day: 4, title: "Random Space Facts",
+    petMsg: "Random = surprising. Today you make a SPACE FACT generator — every click gives a new mind-blowing fact.",
+    intro: "Build a 'Mind-Blowing Space Fact' button. Click it → it picks a random fact from a list of 10 cool space facts. Different fact every time!",
+    rewardCoins: 15,
+    think: { q: "Where should the 10 facts be stored?", options: ["In your brain only", "In an array (a list) in the code", "In 10 separate webpages", "On Wikipedia"], correct: 1, explain: "Arrays/lists hold many items. `facts = ['fact1', 'fact2', ...]`. Then pick one randomly!" },
+    promptBuilder: { template: "Build a Mind-Blowing Space Facts website.\nDETAILS: At least 10 truly fascinating space facts in a JavaScript array. Big \"🌌 Surprise me!\" button. Each click shows a NEW random fact (don't repeat the same one twice in a row).\nSTYLE: {a}. Make the fact appear with a fade-in animation.\nRULES: Facts must be REAL and amazing (about black holes, galaxies, planets).",
+      blanks: [ { id: 'a', placeholder: 'style', default: 'mysterious space style' } ] },
+    verify: [
+      { q: "After clicking 5 times: did you see 5 DIFFERENT facts?", options: ["Yes!", "Some repeated immediately", "Always the same one"], correct: 0, explain: "If facts repeat too much, ask Claude: 'Make sure the same fact doesn't show twice in a row.'" },
+      { q: "How does the code PICK a random fact?", options: ["It guesses", "Math.random() generates a random number, used as an index", "It rolls a real dice", "Magic"], correct: 1, explain: "Math.random() gives a number 0–1. Multiply by list length, round down → random index!" }
+    ],
+    reflect: { q: "If you wanted 20 facts instead of 10, what would change?", options: ["A lot of code", "Just add more items to the array — that's it!", "You can't, 10 is the limit", "Need a new computer"], correct: 1, explain: "That's the power of arrays. Adding more items is EASY. The code that picks one still works!" }
+  ,
+    reviewQuiz: { topic: "📦 REVIEW", q: "Random Facts Review: Where do the 10 facts LIVE in your code?", options: ["In Claude's brain", "In an array (a list) in JavaScript", "In separate webpages", "In the CSS"], correct: 1, explain: "Arrays hold MANY items. `facts = [\'fact1\', \'fact2\', ...]`. To add more, just add to the array — same code keeps working!" }
+  ,
+    themedHeroes: ["shannon", "curie"]
+  },
+  "1-5": { week: 1, day: 5, title: "Week 1 BOSS: Space Dice Roller",
+    petMsg: "Friday Boss Battle! 🌟 Combine EVERYTHING you learned this week into one polished app.",
+    intro: "Build a Space Dice Roller. Big button + animated dice rolling + random number 1-6 displayed huge + a fun message based on what you roll ('Boring!' for 1, 'JACKPOT!' for 6).",
+    rewardCoins: 25,
+    think: { q: "This combines variables, arrays, interactivity, AND colors. What's the BIGGEST tip?", options: ["Do it all in one prompt", "Break it into parts and test each", "Give up", "Ask Claude to do it all at once silently"], correct: 1, explain: "Big projects = small steps. Get the button working FIRST. Then random number. Then animation. Then messages." },
+    promptBuilder: { template: "Build a Space Dice Roller webpage.\nDETAILS:\n- Big glowing \"🎲 ROLL!\" button\n- When clicked: dice animates spinning for 1 second\n- Then shows a HUGE number 1-6\n- Below the number: a fun message based on the roll (1=\"Womp womp\", 6=\"JACKPOT!\", 2-5=different fun messages)\n- Galaxy background\nSTYLE: {a}",
+      blanks: [ { id: 'a', placeholder: 'extra style touches', default: 'add glowing borders and a starfield background' } ] },
+    verify: [
+      { q: "Test it 10 times. Are all 6 numbers reachable?", options: ["Yes, saw all 6 numbers eventually", "Only saw certain numbers", "Same one every time"], correct: 0, explain: "If skewed, ask Claude: 'Why do I keep seeing the same number? Check your random logic.'" },
+      { q: "BOSS QUESTION: This app uses THREE skills from this week. Name one:", options: ["Variables to store the roll", "Random/array logic to pick the number", "Click interactivity", "All of the above"], correct: 3, explain: "You used all 3! Variables hold the roll, randomness picks it, clicks trigger it. You're a builder!" }
+    ],
+    reflect: { q: "🌟 Week 1 reflection: what was HARDEST?", options: ["Asking Claude clearly", "Reading the code Claude gave", "Knowing when something was broken", "All of these are real builder skills!"], correct: 3, explain: "All builders face these. The good news: every Week from now on, this gets easier." }
+  ,
+    reviewQuiz: { topic: "🎲 REVIEW", q: "Dice Boss Review: Big projects work best when you...", options: ["Ask Claude for everything in one go", "Break them into small parts and test each", "Skip testing", "Just hope it works"], correct: 1, explain: "Big projects = small steps. Get one piece working FIRST. Then add the next piece. That\'s how pros build things!" }
+  ,
+    themedHeroes: ["carmack", "wozniak"]
+  },
+  "2-1": { week: 2, day: 1, title: "Three-Part Prompt",
+    petMsg: "Welcome to Week 2! 🔥 You're going to learn the secret structure that pro builders use.",
+    intro: "Learn the GOAL + DETAILS + RULES recipe. Use it to build a Mood-Based Music Player Page (no real music — just a UI that LOOKS like Spotify).",
+    rewardCoins: 18,
+    think: { q: "Why is structure better than rambling in a prompt?", options: ["It's not, just type whatever", "Clear structure = clearer answer from Claude", "Structure makes Claude angry", "It saves typing"], correct: 1, explain: "Just like a recipe vs random cooking. Structure makes Claude's brain organize the answer better!" },
+    promptBuilder: { template: "GOAL: Build a fake music player UI (no real music) for a {a} mood.\nDETAILS:\n- 3 song cards stacked (with title, artist, album cover emoji)\n- A play button on each\n- The currently-playing card glows\n- A bottom bar showing 'Now Playing: ...'\nRULES: Looks like a real app. Use {b} colors. Mobile-friendly.",
+      blanks: [ { id: 'a', placeholder: 'mood', default: 'chill space' }, { id: 'b', placeholder: 'color palette', default: 'purple and pink neon' } ] },
+    verify: [
+      { q: "Did the GOAL+DETAILS+RULES prompt give you a better result than just saying 'make a music player'?", options: ["YES — way more polished and specific", "About the same", "Worse"], correct: 0, explain: "Structured prompts win. Save this recipe forever: GOAL, DETAILS, RULES." },
+      { q: "When you click a song card, what makes it 'glow'?", options: ["The CSS box-shadow or border", "A new picture loads", "The page reloads"], correct: 0, explain: "Glow effects in CSS use box-shadow or filter. JS just adds the right CSS class on click." }
+    ],
+    reflect: { q: "The 3-part prompt recipe is:", options: ["Hi, Bye, Done", "Goal, Details, Rules", "Fast, Slow, Stop", "Red, Blue, Green"], correct: 1, explain: "GOAL + DETAILS + RULES. Remember this forever!" }
+  ,
+    reviewQuiz: { topic: "📜 REVIEW", q: "Three-Part Prompt Review: The recipe is...", options: ["Hi, Bye, Done", "GOAL + DETAILS + RULES", "Fast, Slow, Stop", "Red, Blue, Green"], correct: 1, explain: "GOAL (what you want) + DETAILS (how it should look/work) + RULES (constraints). Use this forever!" }
+  ,
+    themedHeroes: ["hamilton", "hawking"]
+  },
+  "2-2": { week: 2, day: 2, title: "Make Claude Explain",
+    petMsg: "Builders don't just COPY code — they UNDERSTAND it. Today: become a code detective.",
+    intro: "Take any code Claude gave you. Ask Claude to explain ONE specific part. Then re-explain it back to Claude in YOUR words.",
+    rewardCoins: 18,
+    think: { q: "Why bother understanding the code if it works?", options: ["No reason", "So you can FIX it when it breaks (and it will)", "To brag", "Because Claude requires it"], correct: 1, explain: "Code ALWAYS breaks eventually. If you don't understand it, you can't fix it. Period." },
+    promptBuilder: { template: "Here's some code you gave me earlier:\n\n[PASTE THE CODE HERE]\n\nExplain this part to me like I'm 10:\n- What does the line `{a}` do?\n- Why is it needed?\n- What would happen if I deleted that line?",
+      blanks: [ { id: 'a', placeholder: 'a specific line of code', default: 'the random number line' } ] },
+    verify: [
+      { q: "After Claude explained, did you UNDERSTAND that line?", options: ["Yes, totally", "Sort of — some words were too techy", "No, asked but still confused"], correct: 0, explain: "If still confused, ask: 'Use simpler words. Use a real-world example.' Keep going until you get it!" },
+      { q: "Now: explain that line BACK to Claude in your own words. Did Claude say you got it right?", options: ["Yes!", "Claude said I missed something", "Claude said I was wrong"], correct: 0, explain: "If wrong, no stress — Claude will gently correct you. This is how you LEARN, not just COPY." }
+    ],
+    reflect: { q: "If you can't explain a piece of code, what does that mean?", options: ["You're dumb (no!)", "It's not really YOUR code yet — and that's okay, just ASK", "You should give up", "Delete it"], correct: 1, explain: "Nobody's dumb. Not understanding = a sign to ASK more questions, not stop. Keep going!" }
+  ,
+    reviewQuiz: { topic: "🔍 REVIEW", q: "Make Claude Explain Review: Why understand the code Claude writes?", options: ["To brag", "So you can fix it when it breaks", "Claude requires it", "No reason"], correct: 1, explain: "Code always breaks eventually. If you understand it, you can fix it. If not — you\'re stuck." }
+  ,
+    themedHeroes: ["feynman", "turing"]
+  },
+  "2-3": { week: 2, day: 3, title: "Memory Match Game",
+    petMsg: "Real game time! 🎮 You're building a memory matching game — bigger than anything yet. Trust the process.",
+    intro: "Build a Memory Matching card game: 6 pairs of cards face down. Click 2 → if they match, they stay flipped. Find all 6 pairs to win!",
+    rewardCoins: 20,
+    think: { q: "This is a BIGGER project. What's the smart first move?", options: ["Ask Claude for the whole thing in one go", "Plan all the parts FIRST, then describe them clearly to Claude", "Start coding without thinking", "Give up"], correct: 1, explain: "Big projects = plan first. List the parts: 6 pairs, click logic, match check, win screen. THEN write the prompt." },
+    promptBuilder: { template: "GOAL: Build a memory matching card game.\nDETAILS:\n- 12 cards in a 4x3 grid, face down\n- 6 pairs of space emojis (rocket, planet, star, alien, moon, comet)\n- Click a card → it flips face-up\n- Click a 2nd card → if they match, both stay flipped. If not, both flip back after 1 second.\n- When all pairs match: show a {a} WIN screen with confetti\n- Show a move counter (how many flips taken)\nRULES: Smooth flip animation. Mobile-friendly.",
+      blanks: [ { id: 'a', placeholder: 'win screen vibe', default: 'epic galactic' } ] },
+    verify: [
+      { q: "Can you click a 3rd card while the first 2 are still being checked?", options: ["Yes (this is a BUG)", "No, it waits properly", "I didn't test"], correct: 1, explain: "If yes — there's a bug. Tell Claude: 'Disable clicks while checking 2 cards.' That's pro debugging!" },
+      { q: "How does the code know if 2 cards 'match'?", options: ["Magic", "It compares their value/emoji (if card1.value === card2.value)", "It reads your mind", "It checks the time"], correct: 1, explain: "=== means 'exactly equal'. Computers compare values to decide if things match." }
+    ],
+    reflect: { q: "Today you described a BIG project in ONE good prompt. That's a real skill called:", options: ["Specification", "Daydreaming", "Hoping", "Yelling"], correct: 0, explain: "SPECIFICATION = clearly describing what you want. Engineers do this every day for billion-dollar projects!" }
+  ,
+    reviewQuiz: { topic: "🎮 REVIEW", q: "Memory Match Review: How does code know if 2 cards 'match'?", options: ["Magic", "It compares their values (===)", "It guesses", "It reads your mind"], correct: 1, explain: "=== means \'exactly equal\'. Computers compare values to make decisions. Foundation of all logic!" }
+  ,
+    themedHeroes: ["carmack", "lovelace"]
+  },
+  "2-4": { week: 2, day: 4, title: "The Bug Hunter",
+    petMsg: "Time to learn the most important builder skill: HUNTING BUGS. 🐛 Every coder fights bugs.",
+    intro: "Take yesterday's Memory Match game. Find ONE thing that's weird, broken, or could be better. Describe it precisely. Get Claude to fix JUST THAT, without breaking anything else.",
+    rewardCoins: 18,
+    think: { q: "What's the SECRET to good bug reports?", options: ["Be vague", "Say it 'doesn't work'", "Describe EXACTLY what's broken + what SHOULD happen", "Yell at Claude"], correct: 2, explain: "Be PRECISE. 'Clicking the same card twice flips it back' is 100x better than 'it's broken'." },
+    promptBuilder: { template: "There's a bug in my code:\n\nWHAT HAPPENS: {a}\nWHAT SHOULD HAPPEN: {b}\nWHEN: {c}\n\nPlease fix ONLY this bug. Don't change anything else.",
+      blanks: [ { id: 'a', placeholder: 'observed problem', default: 'when I click the same card twice, it counts as a match' }, { id: 'b', placeholder: 'desired behavior', default: 'clicking the same card twice should do nothing' }, { id: 'c', placeholder: 'when it happens', default: 'every time, on any card' } ] },
+    verify: [
+      { q: "After Claude fixed it: did the bug go away?", options: ["Yes!", "Fixed that, but broke something else", "Still broken"], correct: 0, explain: "If it broke something else, say: 'You fixed X but broke Y. Please fix both.' Be specific!" },
+      { q: "Pro tip: before asking AI to fix code, what should you do first?", options: ["Cry", "Test the bug — make sure you can reliably reproduce it", "Rewrite everything", "Reboot the computer"], correct: 1, explain: "Reproducing the bug = step 1 of debugging. If you can't trigger it, you can't fix it." }
+    ],
+    reflect: { q: "Why is debugging actually FUN once you get good at it?", options: ["It's never fun", "It's like a detective mystery — you find clues and solve it!", "Computers love it", "It saves money"], correct: 1, explain: "Top engineers LOVE debugging. It's puzzle-solving. Every bug fixed = a small victory!" }
+  ,
+    reviewQuiz: { topic: "🐛 REVIEW", q: "Bug Hunter Review: The SECRET to good bug reports is...", options: ["Say it 'doesn't work'", "Describe EXACTLY what's broken + what should happen", "Yell at Claude", "Give up"], correct: 1, explain: "BE PRECISE. \'X happens when I do Y, but I want Z\' is 100x better than \'broken\'. Pro debugging skill!" }
+  ,
+    themedHeroes: ["grace", "linus"]
+  },
+  "2-5": { week: 2, day: 5, title: "Week 2 BOSS: Space Quiz Show",
+    petMsg: "FRIDAY BOSS! 🏆 Use everything: 3-part prompts, reading code, iteration, debugging. This is your masterpiece.",
+    intro: "Build a polished Space Quiz Show: 5 multiple-choice questions, score tracker, animated transitions, win/lose screens.",
+    rewardCoins: 30,
+    think: { q: "POLISH is the difference between 'works' and 'feels pro'. What's an example?", options: ["Just more code", "Smooth animations, fun feedback sounds, nice fail messages, celebration on win", "Faster computer", "More questions"], correct: 1, explain: "Polish = the SMALL DETAILS that make users smile. That's what separates apps from amazing apps." },
+    promptBuilder: { template: "GOAL: Polished Space Quiz Show.\nDETAILS:\n- 5 multiple-choice space questions (mix easy + hard)\n- 4 buttons per question\n- Show score updating live (0/5, 1/5, etc.)\n- Smooth transition between questions\n- Right answer: green flash + 'Correct!' message\n- Wrong: red shake + 'Not quite — answer was: X'\n- End screen: shows total score with personalized message ({a})\n- 'Play Again' button\nSTYLE: {b}",
+      blanks: [ { id: 'a', placeholder: 'message tone', default: 'funny and encouraging' }, { id: 'b', placeholder: 'visual style', default: 'epic galaxy game show with neon' } ] },
+    verify: [
+      { q: "Did the score update LIVE as you answered?", options: ["Yes", "Only at the end", "Got stuck"], correct: 0, explain: "Live updates feel responsive. If not, tell Claude: 'Update the score immediately after each answer.'" },
+      { q: "BOSS Q: This used at least 3 things from Week 2. Which combo?", options: ["3-part prompt + variables + bug-finding", "Just luck", "Only HTML", "Magic"], correct: 0, explain: "STRUCTURED PROMPT to plan it. VARIABLES (score, current question). BUG-HUNTING when buttons misbehaved. You did it all!" }
+    ],
+    reflect: { q: "🏆 Week 2 reflect: how do you feel vs Week 1?", options: ["Same", "More confident asking Claude precisely", "Less confident", "Tired"], correct: 1, explain: "Confidence + precision is the real superpower. You can already do things most adults can't." }
+  ,
+    reviewQuiz: { topic: "✨ REVIEW", q: "Quiz Show Boss Review: What's 'polish' in apps?", options: ["More code", "Small details that make users smile (animations, sounds, feedback)", "Faster computer", "Bigger screen"], correct: 1, explain: "Polish = the small touches. Smooth animations, fun messages, satisfying clicks. This is what separates okay apps from amazing ones!" }
+  ,
+    themedHeroes: ["satoshi", "hamilton"]
+  }
+};
+
+const DAILY_QUIZ = [
+  { topic: "🌌 SPACE", q: "If you fell into a black hole, scientists say you'd be 'spaghettified'. What does that mean?", options: ["You turn into pasta", "Gravity stretches you LONG and thin", "You become invisible", "You become a star"], correct: 1, explain: "Real science word! Gravity is so strong it stretches you like a noodle. Yum?" },
+  { topic: "🌌 SPACE", q: "What weird thing happens to time near a black hole?", options: ["Nothing", "Time slows down (for you)", "Time speeds up", "Time goes backwards"], correct: 1, explain: "Einstein! Strong gravity = slower time. 1 hour near a black hole could = years on Earth!" },
+  { topic: "🌌 SPACE", q: "How big is the biggest known black hole?", options: ["Same as the Sun", "Same as Earth", "BILLIONS of times the Sun's mass", "Tiny"], correct: 2, explain: "TON 618: about 40 billion Suns. So big it's hard to even think about." },
+  { topic: "🌌 SPACE", q: "What's INSIDE Jupiter?", options: ["Mostly hydrogen and helium gas", "Solid rock", "Water", "Cheese"], correct: 0, explain: "Jupiter is a 'gas giant' — mostly hydrogen, like the Sun. You couldn't stand on it!" },
+  { topic: "🌌 SPACE", q: "Where would your scream sound the LOUDEST: Earth, Moon, or Mars?", options: ["Earth", "Moon", "Mars", "Same everywhere"], correct: 0, explain: "Earth! Sound needs AIR. The Moon has none, so you'd be silent. Mars has thin air → muffled." },
+  { topic: "🌌 SPACE", q: "Diamonds rain from the sky on which planet?", options: ["Earth (rare!)", "Neptune & Uranus", "Mars", "Venus"], correct: 1, explain: "Real! Pressure inside Neptune turns carbon into diamond rain. Best storm ever." },
+  { topic: "🌌 SPACE", q: "What's the LARGEST volcano in the Solar System?", options: ["Mt Everest area", "Olympus Mons on Mars (huge!)", "Hawaiian volcanoes", "An Earth volcano"], correct: 1, explain: "Olympus Mons: 22 km tall — 2.5x Mt Everest. Mars used to be wild." },
+  { topic: "🌌 SPACE", q: "How long does light take to travel from the Sun to Earth?", options: ["8 seconds", "8 minutes", "8 hours", "8 days"], correct: 1, explain: "8 min 20 sec. The sunlight hitting you NOW left the Sun before you started this lesson!" },
+  { topic: "🤖 AI", q: "When AI makes up confident-sounding wrong stuff, it's called:", options: ["A glitch", "A hallucination", "A nap", "An error"], correct: 1, explain: "AI 'hallucinates' — invents stuff. Always double-check important facts!" },
+  { topic: "🤖 AI", q: "Can Claude read your mind?", options: ["Yes", "No, it can only read what you type", "Only at night", "Sometimes"], correct: 1, explain: "Claude has ZERO mind-reading. The clearer you type, the better it works." },
+  { topic: "🤖 AI", q: "Why does Claude sometimes say 'I'm not sure'?", options: ["It's broken", "Being honest about uncertainty is a sign of a SAFER AI", "It's tired", "It hates you"], correct: 1, explain: "Honest AI > overconfident AI. 'I don't know' is a strength, not a weakness." },
+  { topic: "🤖 AI", q: "What's a 'token' to AI?", options: ["A coin", "A small piece of a word", "A type of file", "An error"], correct: 1, explain: "AI thinks in tokens (~3-4 letters). 'Spaceship' might be 2 tokens: 'space' + 'ship'." },
+  { topic: "🤖 AI", q: "What's the BEST way to get a great answer?", options: ["Type LOUD", "Be clear, give details, give rules", "Just one word", "Emojis only"], correct: 1, explain: "The 3-part prompt: GOAL + DETAILS + RULES. Tattoo this on your brain!" },
+  { topic: "🤖 AI", q: "Two AI's give different answers. Whose answer is RIGHT?", options: ["Always the first one", "Whichever sounds smarter", "You have to check the facts yourself", "Both are always right"], correct: 2, explain: "AI is not magic. ALWAYS verify important info. You're the captain — they're the crew." },
+  { topic: "💻 CODE", q: "First computer 'bug' was literally:", options: ["A coffee spill", "A real moth stuck in a 1947 computer", "A glitch", "A virus"], correct: 1, explain: "Grace Hopper found an actual moth in a Harvard Mark II. Now 'bug' = any problem!" },
+  { topic: "💻 CODE", q: "What does HTML do?", options: ["Adds movement", "Builds the STRUCTURE of a webpage (like bones)", "Sound", "Magic"], correct: 1, explain: "HTML = bones. CSS = skin/clothes. JS = brain. The 3 friends of every webpage." },
+  { topic: "💻 CODE", q: "What's a variable in code?", options: ["A bug", "A labeled box that holds a value", "A virus", "A planet"], correct: 1, explain: "`name = 'Ethan'`. Labeled box. You can change what's inside whenever." },
+  { topic: "💻 CODE", q: "Why do programmers love loops?", options: ["They're round", "So they don't have to write the same code 100 times", "They sound cool", "No reason"], correct: 1, explain: "DRY: Don't Repeat Yourself. Loops = same code, run many times. Lazy = smart!" },
+  { topic: "💻 CODE", q: "What does CSS stand for?", options: ["Cascading Style Sheets", "Cool Strong Sauce", "Computer System Style", "Code Style Stuff"], correct: 0, explain: "CSS = the design language. Cascading = rules flow from outside-in." },
+  { topic: "💻 CODE", q: "If your code 'works on my machine' but breaks on someone else's:", options: ["Their fault", "Welcome to programming — this is the classic problem!", "Magic", "Restart"], correct: 1, explain: "Every developer has said 'works on my machine'. That's why we test on different devices!" },
+  { topic: "🧠 SMART", q: "If Claude's code doesn't work, the FIRST thing to do is:", options: ["Cry", "Tell Claude EXACTLY what's wrong + what you expected", "Restart computer", "Yell"], correct: 1, explain: "Be precise about the bug. Vague = wasted time. Specific = quick fix." },
+  { topic: "🧠 SMART", q: "What does 'iteration' mean for builders?", options: ["A type of food", "Try → improve → try again — repeat!", "Delete everything", "Save once"], correct: 1, explain: "Iteration = how every great product is built. v1 → v2 → v100. Forever improving." },
+  { topic: "🧠 SMART", q: "When Claude gives code you can't read, what's the BEST move?", options: ["Use it anyway", "Ask: 'Explain this line by line, like I'm 10'", "Delete it", "Find another AI"], correct: 1, explain: "Real builders UNDERSTAND their code. 'Explain like I'm 10' = magic words." }
+];
+
+const OUTFITS = {
+  hat: [
+    { id: 'h1', name: 'Cap', emoji: '🧢', price: 5, top: '-30px', left: '50%', size: '40px' },
+    { id: 'h2', name: 'Top Hat', emoji: '🎩', price: 15, top: '-32px', left: '50%', size: '38px' },
+    { id: 'h3', name: 'Crown', emoji: '👑', price: 30, top: '-26px', left: '50%', size: '36px' },
+    { id: 'h4', name: 'Party', emoji: '🥳', price: 10, top: '-28px', left: '50%', size: '40px' },
+    { id: 'h5', name: 'Hard Hat', emoji: '⛑', price: 12, top: '-30px', left: '50%', size: '40px' },
+    { id: 'h6', name: 'Pumpkin', emoji: '🎃', price: 18, top: '-28px', left: '50%', size: '40px' }
+  ],
+  vehicle: [
+    { id: 'v1', name: 'Bike', emoji: '🚲', price: 20, top: '45%', left: '50%', size: '60px' },
+    { id: 'v2', name: 'Skate', emoji: '🛹', price: 15, top: '70%', left: '50%', size: '50px' },
+    { id: 'v3', name: 'Rocket', emoji: '🚀', price: 25, top: '40%', left: '50%', size: '70px' },
+    { id: 'v4', name: 'Scooter', emoji: '🛴', price: 18, top: '50%', left: '50%', size: '55px' },
+    { id: 'v5', name: 'UFO', emoji: '🛸', price: 28, top: '30%', left: '50%', size: '70px' }
+  ],
+  gear: [
+    { id: 'g1', name: 'Shades', emoji: '🕶', price: 8, top: '30%', left: '50%', size: '40px' },
+    { id: 'g2', name: 'Bowtie', emoji: '🎀', price: 6, top: '60%', left: '50%', size: '30px' },
+    { id: 'g3', name: 'Headphones', emoji: '🎧', price: 12, top: '20%', left: '50%', size: '50px' },
+    { id: 'g4', name: 'Mic', emoji: '🎤', price: 10, top: '50%', left: '70%', size: '35px' },
+    { id: 'g5', name: 'Sword', emoji: '⚔', price: 20, top: '40%', left: '20%', size: '40px' },
+    { id: 'g6', name: 'Wand', emoji: '✨', price: 15, top: '40%', left: '80%', size: '40px' }
+  ],
+  rare: [
+    { id: 'r1', name: 'Gold Crown', emoji: '👑', price: 100, top: '-30px', left: '50%', size: '50px', unlock: 'streak3' },
+    { id: 'r2', name: 'Lightning', emoji: '⚡', price: 80, top: '20%', left: '50%', size: '60px', unlock: 'streak7' },
+    { id: 'r3', name: 'Dragon', emoji: '🐉', price: 150, top: '10%', left: '50%', size: '70px', unlock: 'streak14' },
+    { id: 'r4', name: 'Rainbow', emoji: '🌈', price: 200, top: '-10px', left: '50%', size: '80px', unlock: 'streak30' }
+  ]
+};
+
+const HERO_CARDS = [
+  { id: 'einstein', emoji: '🧑‍🔬', name: 'Albert\nEinstein', title: 'Theoretical Physicist', rarity: 'epic',
+    quote: "If you can't explain it simply, you don't understand it well enough.",
+    story: "Einstein's CHAUFFEUR drove him to so many speeches he memorized them word-for-word. One day Einstein joked, 'Let's swap — YOU give the lecture, I'll be the driver.' The chauffeur did it PERFECTLY. But after, a professor asked a tough technical question. The chauffeur didn't blink: 'That's such an easy question, even my driver can answer it!' He pointed to Einstein in the back. 🎤" },
+  { id: 'hawking', emoji: '👨‍🦽', name: 'Stephen\nHawking', title: 'Cosmologist', rarity: 'epic',
+    quote: "Look up at the stars, not down at your feet.",
+    story: "Hawking was told he had 2 years to live at age 21. He lived 55 MORE years. He discovered black holes slowly glow and evaporate — 'Hawking Radiation'. He once bet a friend ANY encyclopedia on a physics question. He lost. He paid up with a baseball encyclopedia. Physicists need humor too. ⚫" },
+  { id: 'lovelace', emoji: '👩‍🔬', name: 'Ada\nLovelace', title: 'First Programmer', rarity: 'legendary',
+    quote: "The Analytical Engine has no pretensions to originate anything.",
+    story: "In 1843, before computers existed, Ada wrote the world's FIRST computer program — on paper, for a machine never built. She predicted computers could make music and art. People thought she was crazy. 180 years later — Spotify, AI art, video games. She was right. The world's first coder was a teenage girl. 💜" },
+  { id: 'grace', emoji: '👵', name: 'Grace\nHopper', title: 'Compiler Pioneer', rarity: 'epic',
+    quote: "The most dangerous phrase is: We've always done it this way.",
+    story: "In 1947, Grace found a real MOTH stuck in a Harvard computer relay. She taped it into her logbook: 'first actual case of bug being found'. That's why we say 'debugging' today! She also invented the first compiler. EVERY programmer alive owes her. 🦋" },
+  { id: 'turing', emoji: '🧠', name: 'Alan\nTuring', title: 'AI Founder', rarity: 'epic',
+    quote: "We can only see a short distance ahead, but plenty there that needs to be done.",
+    story: "Turing imagined AI before computers existed. He created the 'Turing Test': if you chat with something and can't tell if it's human or machine — it's intelligent. (Sound familiar?) During WWII he cracked the Nazi Enigma code, saving millions of lives. Every chat with Claude is in his shadow. 🧩" },
+  { id: 'curie', emoji: '👩‍🔬', name: 'Marie\nCurie', title: 'Radioactivity Pioneer', rarity: 'epic',
+    quote: "Nothing in life is to be feared, it is only to be understood.",
+    story: "Marie won TWO Nobel Prizes in TWO different sciences (Physics + Chemistry) — only person ever. Her lab notebooks are STILL too radioactive to touch — kept in lead boxes. Her daughter ALSO won a Nobel. The Curies dominated science for 30 years. 💛" },
+  { id: 'wozniak', emoji: '🧔', name: 'Steve\nWozniak', title: 'Apple Co-Founder', rarity: 'rare',
+    quote: "Never trust a computer you can't throw out a window.",
+    story: "Woz built the entire first Apple computer BY HIMSELF in a garage. He once snuck a tiny radio jammer into a school dorm to block people's TVs and then 'fix' them by hitting the wall in the right place. Pranks first, billionaire later. He gave away millions in Apple shares to early employees. 🍎" },
+  { id: 'carmack', emoji: '🎮', name: 'John\nCarmack', title: 'Game Engine Wizard', rarity: 'rare',
+    quote: "Focused, hard work is the real key to success.",
+    story: "Carmack built engines behind Doom, Quake, and modern VR. As a teen he tried to steal Apple II computers from his school using thermite (he got caught). After juvenile detention, he became one of the most respected programmers ALIVE. His code is so legendary other devs study it line by line. 🔥" },
+  { id: 'hamilton', emoji: '👩‍🚀', name: 'Margaret\nHamilton', title: 'Apollo 11 Coder', rarity: 'legendary',
+    quote: "There was no choice but to be pioneers.",
+    story: "She wrote the software that landed humans on the Moon in 1969. During the actual landing, the computer started failing — but her code was designed to PRIORITIZE: drop the unimportant stuff, keep the landing alive. Without her code, Apollo 11 would have crashed. She literally invented the term 'software engineering'. 🌙" },
+  { id: 'tim', emoji: '🌐', name: 'Tim\nBerners-Lee', title: 'Web Inventor', rarity: 'rare',
+    quote: "The Web is more a social creation than a technical one.",
+    story: "In 1989 Tim invented the WORLD WIDE WEB at CERN. He could have become a billionaire. Instead he GAVE IT AWAY for free, forever. No patents. No fees. That's why the internet you use every day exists. Imagine inventing the wheel and giving it to everyone. 🌍" },
+  { id: 'feynman', emoji: '👨‍🏫', name: 'Richard\nFeynman', title: 'Physicist & Prankster', rarity: 'rare',
+    quote: "Knowing the name of something is not the same as knowing it.",
+    story: "Feynman won the Nobel Prize for quantum physics. He also: cracked safes for fun at Los Alamos during the atomic bomb project, played bongo drums in Brazil, taught himself to paint, and figured out the Challenger shuttle disaster on LIVE TV by dipping an O-ring in ice water. Pure curiosity, zero ego. 🥁" },
+  { id: 'linus', emoji: '🐧', name: 'Linus\nTorvalds', title: 'Linux Creator', rarity: 'rare',
+    quote: "Talk is cheap. Show me the code.",
+    story: "At age 21 (a college student!) Linus posted online: 'Hello everybody. I'm doing a free operating system, just a hobby, won't be big.' That hobby is now Linux. It runs Android phones, 96% of supercomputers, and most of the internet. From a Finnish student's bedroom. 🐧" },
+  { id: 'mae', emoji: '👩‍🚀', name: 'Mae\nJemison', title: 'First Black Woman in Space', rarity: 'epic',
+    quote: "Never be limited by other people's limited imaginations.",
+    story: "Doctor + chemical engineer + astronaut + dancer + Star Trek actress. Mae took a poster of dancer Judith Jamison to space because 'they wanted me to bring something cultural that men wouldn't.' She runs an organization to make humans travel to OTHER STAR SYSTEMS by 2112. ✨" },
+  { id: 'shannon', emoji: '🤹', name: 'Claude\nShannon', title: 'Info Theory Founder', rarity: 'rare',
+    quote: "I just wondered how things were put together.",
+    story: "Shannon invented the math behind every digital thing you use — Wi-Fi, JPGs, MP3s, the internet. He also built a mechanical mouse that solved mazes (1950!), juggling robots, and a 'useless box' — a box whose only purpose is to turn itself off when you turn it on. Genius + silliness = best combo. 📡" },
+  { id: 'satoshi', emoji: '🥷', name: 'Satoshi\nNakamoto', title: 'Bitcoin Creator (Mystery!)', rarity: 'legendary',
+    quote: "We can't see what's happening unless we look.",
+    story: "In 2008 someone (or some group?) published a paper inventing Bitcoin under the name 'Satoshi Nakamoto'. They then DISAPPEARED in 2011 — never came back. Their Bitcoin wallet holds about $50 BILLION worth of crypto, untouched for over a decade. Nobody knows who they are. Real-life mystery. 🌑" }
+];
+
+function defaultState() {
+  return {
+    coins: 0, stars: 0, currentWeek: 1, currentDay: 1,
+    completedLessons: [], streak: 0, lastActiveDate: null,
+    streakFreezes: 2, lastFreezeRefillDate: null, streakMilestones: [],
+    notes: [], promptLog: [], projects: [],
+    dailyQuizAnsweredOn: null, dailyQuizCorrect: 0, dailyQuizTotal: 0,
+    checkpointsPassed: [],
+    petName: 'Pixel', petEmoji: '👾', petEquipped: {}, petOwnedOutfits: [],
+    petLastChange: null, petTodayOutfit: null,
+    heroOwned: [],
+    sessionStartTime: null, totalMinutes: 0, visitCount: 0,
+    lastBackupDate: null, backupCount: 0,
+    builtsHelpSeen: false, welcomeSeen: false, weekendBonusEarnedOn: null
+  };
+}
+
+let state = loadState();
+
+function loadState() {
+  try {
+    const raw = localStorage.getItem(STORAGE_KEY);
+    if (!raw) return defaultState();
+    return Object.assign(defaultState(), JSON.parse(raw));
+  } catch(e) { return defaultState(); }
+}
+function saveState() { localStorage.setItem(STORAGE_KEY, JSON.stringify(state)); }
+
+function todayStr() { return new Date().toDateString(); }
+function daysBetween(d1, d2) { return Math.round((new Date(d2) - new Date(d1)) / 86400000); }
+
+function updateStreak() {
+  const today = todayStr();
+  state.visitCount = (state.visitCount || 0) + 1;
+  const firstOfMonth = new Date().toISOString().slice(0,7);
+  if (state.lastFreezeRefillDate !== firstOfMonth) {
+    state.streakFreezes = Math.max(state.streakFreezes, 2);
+    state.lastFreezeRefillDate = firstOfMonth;
+  }
+  if (state.lastActiveDate === today) { saveState(); return; }
+  let isNewMilestone = false, milestoneReached = 0;
+  if (state.lastActiveDate) {
+    const diff = daysBetween(state.lastActiveDate, today);
+    if (diff === 1) { state.streak += 1; }
+    else if (diff > 1) {
+      const missed = diff - 1;
+      if (state.streakFreezes >= missed && missed <= 2) {
+        state.streakFreezes -= missed; state.streak += 1;
+        showToast(`⚡ Energy Shield protected your streak! (${state.streakFreezes} left)`);
+      } else {
+        // Soft language: never say "reset" or "broken"
+        state.streak = 1;
+        showToast(`✨ Welcome back, Cadet! Let's start a new streak together!`);
+      }
+    }
+  } else { state.streak = 1; }
+  state.lastActiveDate = today;
+  [3, 7, 14, 30].forEach(m => {
+    if (state.streak === m && !state.streakMilestones.includes(m)) {
+      state.streakMilestones.push(m); isNewMilestone = true; milestoneReached = m;
+    }
+  });
+  if (state.petLastChange !== today) { rotateTodayOutfit(); state.petLastChange = today; }
+  saveState();
+  if (isNewMilestone) setTimeout(() => showStreakMilestone(milestoneReached), 800);
+}
+
+function rotateTodayOutfit() {
+  const pool = [...OUTFITS.hat, ...OUTFITS.vehicle, ...OUTFITS.gear];
+  const random = pool[Math.floor(Math.random() * pool.length)];
+  state.petTodayOutfit = random.id;
+}
+
+function showStreakMilestone(days) {
+  let bonus = 0, reward = '';
+  if (days === 3) { bonus = 20; reward = '🥉 Bronze Streak + Gold Crown unlocked!'; }
+  if (days === 7) { bonus = 50; reward = '🥈 Silver Streak + Lightning unlocked!'; }
+  if (days === 14) { bonus = 100; reward = '🥇 Gold Streak + Dragon unlocked!'; }
+  if (days === 30) { bonus = 250; reward = '💎 DIAMOND STREAK + Rainbow Aura unlocked!'; }
+  state.coins += bonus; saveState();
+  document.getElementById('streakModalContent').innerHTML = `
+    <h2 style="font-size:24px;color:var(--red);">🔥 ${days} DAY STREAK!</h2>
+    <div style="font-size:80px;margin:20px 0;">${days===30?'💎':days===14?'🥇':days===7?'🥈':'🥉'}</div>
+    <p style="font-size:18px;line-height:1.5;">${reward}</p>
+    <p style="font-size:20px;font-weight:700;color:var(--gold-dark);margin-top:14px;">+${bonus} coins!</p>`;
+  openModal('streakModal'); launchConfetti();
+}
+
+function launchConfetti() {
+  const colors = ['#ffd23f', '#ee3d3d', '#2978f0', '#3fcb52', '#ff2dd1'];
+  for (let i = 0; i < 60; i++) {
+    const c = document.createElement('div');
+    c.className = 'confetti';
+    c.style.left = Math.random() * 100 + 'vw';
+    c.style.background = colors[Math.floor(Math.random() * colors.length)];
+    c.style.animationDelay = Math.random() * 0.5 + 's';
+    c.style.animationDuration = (2 + Math.random() * 2) + 's';
+    document.body.appendChild(c);
+    setTimeout(() => c.remove(), 4000);
+  }
+}
+
+function isWeekend() { const d = new Date().getDay(); return d === 0 || d === 6; }
+
+function getCurrentLesson() {
+  const key = `${state.currentWeek}-${state.currentDay}`;
+  return LESSONS[key] || null;
+}
+
+function getPetMessage() {
+  const lesson = getCurrentLesson();
+  if (!lesson) return `Wow Cadet ${CADET_NAME}! We've finished all the unlocked missions. Codeon is so proud of you. More worlds coming soon!`;
+  let msg = lesson.petMsg;
+  // Positive streak framing (never punish, only celebrate)
+  if (state.streak >= 14) msg = `🔥🔥 ${state.streak} days together! You're amazing. ` + msg;
+  else if (state.streak >= 7) msg = `🔥 ${state.streak}-day streak — we're a team! ` + msg;
+  else if (state.streak >= 3) msg = `Day ${state.streak} together! ` + msg;
+  else if (state.streak === 1 && state.visitCount > 1) msg = `Welcome back! Let's continue. ` + msg;
+  if (isWeekend() && state.weekendBonusEarnedOn !== todayStr()) msg += ` (Weekend = +50% coins today! 🎉)`;
+  return msg;
+}
+
+function renderHUD() {
+  document.getElementById('hudCoins').textContent = state.coins;
+  document.getElementById('hudStreak').textContent = state.streak;
+  document.getElementById('hudFreeze').textContent = state.streakFreezes;
+  document.getElementById('hudStars').textContent = state.stars;
+  document.getElementById('hudWeek').textContent = state.currentWeek;
+  const sb = document.getElementById('hudStreakBox');
+  sb.className = 'hud-item hud-streak' + (state.streak >= 7 ? ' gold' : '');
+  const today = todayStr();
+  const hb = document.getElementById('hudBackup');
+  const hs = document.getElementById('hudBackupStatus');
+  if (state.lastBackupDate === today) {
+    hb.className = 'hud-item tappable backed-up'; hs.textContent = 'Synced ✓';
+  } else if (state.completedLessons.length > 0) {
+    hb.className = 'hud-item tappable needs-backup'; hs.textContent = 'Tap to send';
+  } else {
+    hb.className = 'hud-item tappable'; hs.textContent = 'No backup';
+  }
+}
+
+function renderPet() {
+  document.getElementById('petName').textContent = state.petName || 'Pixel';
+  document.getElementById('petMessage').textContent = getPetMessage();
+  const outfitEl = document.getElementById('petOutfit');
+  let outfit = null;
+  const equippedHat = state.petEquipped && state.petEquipped.hat;
+  if (equippedHat) outfit = findOutfit(equippedHat);
+  else if (state.petTodayOutfit) outfit = findOutfit(state.petTodayOutfit);
+  if (outfit) {
+    outfitEl.textContent = outfit.emoji;
+    // Reset all positioning first
+    outfitEl.style.top = '';
+    outfitEl.style.bottom = '';
+    outfitEl.style.left = '50%';
+    outfitEl.style.transform = 'translateX(-50%)';
+    // Position by category - anchored to avoid overflow on 180px pet
+    if (outfit.category === 'hat') {
+      outfitEl.style.top = '-8px';
+      outfitEl.style.fontSize = '60px';
+    } else if (outfit.category === 'gear') {
+      outfitEl.style.top = '55px';
+      outfitEl.style.fontSize = '44px';
+    } else if (outfit.category === 'vehicle') {
+      // Vehicles: anchor at bottom of pet container
+      outfitEl.style.bottom = '0px';
+      outfitEl.style.fontSize = '50px';
+    } else {
+      outfitEl.style.top = '-8px';
+      outfitEl.style.fontSize = '60px';
+    }
+  } else { outfitEl.textContent = ''; }
+}
+
+// Pet poke: small fun interaction when tapped
+function petPoke() {
+  const svg = document.getElementById('petSvg');
+  if (!svg) return;
+  svg.style.transition = 'transform 0.3s';
+  svg.style.transform = 'scale(1.15) rotate(-5deg)';
+  setTimeout(() => {
+    svg.style.transform = 'scale(1) rotate(0deg)';
+  }, 300);
+  const reactions = [
+    "Hey! That tickled my helmet!",
+    "Hehe, careful — I'm fragile!",
+    "Bloop! I felt that.",
+    "Boop! 👽",
+    "Tap tap! What's our next mission?",
+    "I miss Codeon, but I love hanging with you!",
+    "My antennas are tingling!",
+    "Did you know? On Codeon we hug by tapping helmets!"
+  ];
+  const r = reactions[Math.floor(Math.random() * reactions.length)];
+  document.getElementById('petMessage').textContent = r;
+  setTimeout(() => {
+    document.getElementById('petMessage').textContent = getPetMessage();
+  }, 3000);
+}
+
+function findOutfit(id) {
+  for (const cat of Object.keys(OUTFITS)) {
+    const f = OUTFITS[cat].find(o => o.id === id);
+    if (f) return { ...f, category: cat };
+  }
+  return null;
+}
+
+function renderToday() {
+  const lesson = getCurrentLesson();
+  const tag = document.getElementById('heroTag');
+  const title = document.getElementById('todayTitle');
+  const subtitle = document.getElementById('todaySubtitle');
+  const meta = document.getElementById('heroMeta');
+  if (isWeekend()) {
+    tag.textContent = '🎉 WEEKEND BONUS DAY (+50% coins)';
+    tag.className = 'hero-tag weekend';
+  } else {
+    tag.textContent = `WEEK ${state.currentWeek} • DAY ${state.currentDay}`;
+    tag.className = 'hero-tag';
+  }
+  if (!lesson) {
+    title.textContent = "Phase A Complete!";
+    subtitle.textContent = "You've finished all unlocked missions. Use your coins or collect Hero Cards!";
+    meta.innerHTML = ''; return;
+  }
+  title.textContent = lesson.title;
+  subtitle.textContent = lesson.intro;
+  meta.innerHTML = `<span>⏱ ~25 min</span><span>💰 +${lesson.rewardCoins} coins on complete</span><span>🎯 5 steps</span>`;
+}
+
+function renderDailyQuiz() {
+  const today = todayStr();
+  const quiz = pickDailyQuiz();
+  const qEl = document.getElementById('quizQuestion');
+  const optsEl = document.getElementById('quizOptions');
+  const fbEl = document.getElementById('quizFeedback');
+  if (state.dailyQuizAnsweredOn === today) {
+    qEl.innerHTML = `<span class="topic-tag">${quiz.topic}</span> ${escapeHtml(quiz.q)}`;
+    optsEl.innerHTML = quiz.options.map((opt, i) => `<div class="quiz-option disabled ${i === quiz.correct ? 'reveal-correct' : ''}" data-letter="${String.fromCharCode(65+i)}">${escapeHtml(opt)}</div>`).join('');
+    fbEl.className = 'quiz-feedback active success';
+    fbEl.innerHTML = `<strong>✓ Already answered today!</strong><br>${escapeHtml(quiz.explain)}<br><br>Come back tomorrow for a new one.`;
+    return;
+  }
+  qEl.innerHTML = `<span class="topic-tag">${quiz.topic}</span> ${escapeHtml(quiz.q)}`;
+  optsEl.innerHTML = quiz.options.map((opt, i) => `<button class="quiz-option" data-letter="${String.fromCharCode(65+i)}" onclick="answerDailyQuiz(${i})">${escapeHtml(opt)}</button>`).join('');
+  fbEl.className = 'quiz-feedback'; fbEl.innerHTML = '';
+}
+
+function pickDailyQuiz() {
+  // SPACED REPETITION: prioritize reviewing concepts from completed lessons.
+  // Strategy: pull review quizzes from lessons completed 1, 3, 7 days ago.
+  // If none available, fall back to fun facts.
+  const completed = state.completedLessons || [];
+  if (completed.length === 0) {
+    // Beginner fallback: pure fun quiz
+    const seed = (state.currentDay * 7 + state.currentWeek * 31 + state.visitCount) % DAILY_QUIZ.length;
+    return DAILY_QUIZ[seed];
+  }
+  // Build pool of review quizzes from completed lessons
+  const reviewPool = [];
+  completed.forEach(key => {
+    const lesson = LESSONS[key];
+    if (lesson && lesson.reviewQuiz) {
+      reviewPool.push({ ...lesson.reviewQuiz, _lessonKey: key });
+    }
+  });
+  // Mix: 70% review (if available), 30% fun fact
+  const useFunFact = Math.random() < 0.3 || reviewPool.length === 0;
+  if (useFunFact) {
+    const seed = (state.currentDay * 7 + state.currentWeek * 31 + state.visitCount) % DAILY_QUIZ.length;
+    return DAILY_QUIZ[seed];
+  }
+  // Pick a review quiz, weighted toward recently completed (last few)
+  const recent = reviewPool.slice(-5); // last 5 completed lessons
+  const idx = (state.visitCount + state.currentDay) % recent.length;
+  return recent[idx];
+}
+
+function answerDailyQuiz(index) {
+  const quiz = pickDailyQuiz();
+  const options = document.querySelectorAll('#quizOptions .quiz-option');
+  options.forEach((opt, i) => {
+    opt.classList.add('disabled');
+    if (i === quiz.correct) opt.classList.add('reveal-correct');
+  });
+  options[index].classList.add(index === quiz.correct ? 'correct' : 'wrong');
+  const fb = document.getElementById('quizFeedback');
+  state.dailyQuizTotal += 1;
+  if (index === quiz.correct) {
+    state.dailyQuizCorrect += 1; state.coins += 3;
+    fb.className = 'quiz-feedback active success';
+    fb.innerHTML = `<strong>✓ NAILED IT! +3 coins</strong><br>${escapeHtml(quiz.explain)}`;
+  } else {
+    state.coins += 1;
+    fb.className = 'quiz-feedback active fail';
+    fb.innerHTML = `<strong>Not quite!</strong> Answer: <strong>${escapeHtml(quiz.options[quiz.correct])}</strong><br>${escapeHtml(quiz.explain)}<br><br>+1 for trying!`;
+  }
+  state.dailyQuizAnsweredOn = todayStr();
+  saveState(); renderHUD();
+}
+
+function renderWeeksGrid() {
+  const grid = document.getElementById('weeksGrid');
+  grid.innerHTML = WEEKS.map(w => {
+    const lessonsInWeek = 5;
+    const done = state.completedLessons.filter(s => s.startsWith(w.id + '-')).length;
+    const pct = Math.round((done / lessonsInWeek) * 100);
+    const isCurrent = w.id === state.currentWeek;
+    const isMystery = w.mystery;
+    const cls = isMystery ? 'locked-mystery' : (isCurrent ? 'current' : '');
+    return `<div class="week-card ${cls}" onclick="${isMystery ? 'showMysteryAlert()' : `openMissionForWeek(${w.id})`}">
+      <div class="week-planet ${w.theme}"></div>
+      <div class="week-num">WEEK ${w.id}</div>
+      <div class="week-name">${escapeHtml(w.name)}</div>
+      <div class="week-progress"><div class="week-progress-fill" style="width:${pct}%"></div></div>
+      <div class="week-stats">${done} / ${lessonsInWeek} done</div>
+    </div>`;
+  }).join('');
+}
+
+function showMysteryAlert() { alert("🔒 Mystery World!\n\nThis world is locked. Complete Week 3 to unlock it. The journey continues..."); }
+
+function openMissionForWeek(weekId) {
+  closeModal('mapModal');
+  const week = WEEKS.find(w => w.id === weekId);
+  if (!week) return;
+  for (let d = 1; d <= 5; d++) {
+    const key = `${weekId}-${d}`;
+    if (LESSONS[key] && !state.completedLessons.includes(key)) {
+      state.currentWeek = weekId; state.currentDay = d;
+      saveState(); renderAll();
+      showToast(`Jumped to Week ${weekId}, Day ${d}!`);
+      return;
+    }
+  }
+  showToast(`Week ${weekId} fully complete! 🌟`);
+}
+
+function renderNotes() {
+  const list = document.getElementById('noteList');
+  if (!state.notes.length) { list.innerHTML = '<div class="empty">No notes yet — write your first!</div>'; return; }
+  list.innerHTML = state.notes.slice().reverse().slice(0, 10).map(n => `<div class="note-item"><div class="note-date">${n.date}</div>${escapeHtml(n.text)}</div>`).join('');
+}
+
+function renderPromptLog() {
+  const list = document.getElementById('logList');
+  if (!state.promptLog.length) { list.innerHTML = '<div class="empty">No prompts logged yet.</div>'; return; }
+  list.innerHTML = state.promptLog.slice().reverse().slice(0, 10).map(p => `<div class="log-entry">
+    <div class="log-meta"><span>${p.date}</span><span>W${p.week}-D${p.day}</span></div>
+    <div class="log-prompt"><strong>YOU:</strong> ${escapeHtml(p.prompt)}</div>
+    <div class="log-reply"><strong>CLAUDE:</strong> ${escapeHtml(p.reply)}</div>
+  </div>`).join('');
+}
+
+function renderProjects() {
+  const grid = document.getElementById('projectsGrid');
+  if (!state.projects.length) { grid.innerHTML = '<div class="empty">No builds yet. Make something and add it here!</div>'; return; }
+  grid.innerHTML = state.projects.slice().reverse().map(p => `<div class="project-card">
+    <h5>${escapeHtml(p.title)}</h5>
+    <p>${escapeHtml(p.desc || '')}</p>
+    ${p.link ? `<a href="${escapeHtml(p.link)}" target="_blank">Open →</a>` : '<span class="small-text muted">No link</span>'}
+    <div class="small-text muted" style="margin-top:6px;">${p.date}</div>
+  </div>`).join('');
+}
+
+function renderAll() {
+  updateStreak(); renderHUD(); renderPet(); renderToday(); renderDailyQuiz();
+  renderWeeksGrid(); renderNotes(); renderPromptLog(); renderProjects();
+}
+
+let missionState = null;
+
+function startMission() {
+  const lesson = getCurrentLesson();
+  if (!lesson) { showToast('All current lessons done! Try side quests or wait for more.'); return; }
+  state.sessionStartTime = Date.now(); saveState();
+  missionState = {
+    lessonKey: `${state.currentWeek}-${state.currentDay}`, step: 0,
+    thinkCorrect: null, builtPrompt: '', talkOpened: false,
+    selfChecks: [], reflectCorrect: null
+  };
+  document.getElementById('missionTitle').textContent = lesson.title;
+  document.getElementById('missionIntro').textContent = lesson.intro;
+  renderMissionSteps();
+  openModal('missionModal');
+}
+
+function renderMissionSteps() {
+  const lesson = getCurrentLesson();
+  if (!lesson) return;
+  const flow = document.getElementById('lessonFlow');
+  const s = missionState;
+  flow.innerHTML = `
+    <div class="step-card ${s.thinkCorrect !== null ? 'done' : ''}">
+      <div class="step-number">STEP 1 · THINK</div>
+      <h3 class="step-title">🧠 Quick Plan</h3>
+      <div class="step-body">
+        <p><strong>${escapeHtml(lesson.think.q)}</strong></p>
+        <div class="quiz-options" style="margin-top:10px;">
+          ${lesson.think.options.map((opt, i) => `<button class="quiz-option ${s.thinkCorrect === i ? (i === lesson.think.correct ? 'correct' : 'wrong') : ''} ${s.thinkCorrect !== null ? 'disabled' : ''} ${s.thinkCorrect !== null && i === lesson.think.correct ? 'reveal-correct' : ''}" data-letter="${String.fromCharCode(65+i)}" onclick="answerThink(${i})">${escapeHtml(opt)}</button>`).join('')}
+        </div>
+        ${s.thinkCorrect !== null ? `<div class="quiz-feedback active ${s.thinkCorrect === lesson.think.correct ? 'success' : 'fail'}"><strong>${s.thinkCorrect === lesson.think.correct ? '✓ Great thinking!' : 'No worries — let us see:'}</strong><br>${escapeHtml(lesson.think.explain)}</div>` : ''}
+      </div>
+    </div>
+
+    <div class="step-card ${s.thinkCorrect === null ? 'locked' : ''} ${s.builtPrompt && s.talkOpened ? 'done' : ''}">
+      <div class="step-number">STEP 2 · BUILD & TALK</div>
+      <h3 class="step-title">🚀 Build Your Prompt & Open Claude</h3>
+      <div class="step-body">
+        <p>Fill in the blanks below. Then tap to copy and open Claude in a new tab.</p>
+        <div class="prompt-builder" id="promptBuilderArea">${renderPromptBuilder(lesson.promptBuilder)}</div>
+        ${!s.builtPrompt ? `<button class="copy-btn" style="margin-top:14px;" onclick="finalizePrompt()">✓ Lock in my prompt</button>` : ''}
+        ${s.builtPrompt ? `
+          <div class="prompt-final">${escapeHtml(s.builtPrompt)}</div>
+          <div style="margin-top:14px; display:flex; gap:10px; flex-wrap:wrap;">
+            <a href="https://claude.ai/new" target="_blank" class="btn btn-primary" onclick="markTalkOpened()">📋 COPY & OPEN CLAUDE</a>
+            <button class="copy-btn" onclick="finalizePrompt()" style="background:white;">✎ Edit prompt</button>
+          </div>
+          ${s.talkOpened ? `
+            <div style="margin-top:18px; padding:14px; background:#e8f9e8; border:2px solid var(--grass-dark); border-radius:10px;">
+              <p style="margin-bottom:10px;"><strong>✓ Great! Now go build with Claude.</strong></p>
+              <p style="font-size:15px; color:#444;">When you're done building, come back here and click <strong>Step 3</strong> below.</p>
+            </div>
+          ` : ''}
+        ` : ''}
+      </div>
+    </div>
+
+    <div class="step-card ${!s.talkOpened ? 'locked' : ''} ${s.reflectCorrect !== null ? 'done' : ''}">
+      <div class="step-number">STEP 3 · CHECK & REFLECT</div>
+      <h3 class="step-title">🌟 You Did It!</h3>
+      <div class="step-body">
+        <p><strong>Quick check — tap the boxes that are TRUE about what you built:</strong></p>
+        <div style="display:grid; gap:8px; margin:10px 0 16px;">
+          ${lesson.verify.map((v, vi) => `
+            <label class="self-check ${s.selfChecks && s.selfChecks[vi] ? 'checked' : ''}" onclick="toggleSelfCheck(${vi})">
+              <span class="self-check-box">${s.selfChecks && s.selfChecks[vi] ? '✓' : ''}</span>
+              <span class="self-check-text">${escapeHtml(v.q)}</span>
+            </label>
+          `).join('')}
+        </div>
+        <p style="margin-top:18px;"><strong>${escapeHtml(lesson.reflect.q)}</strong></p>
+        <div class="quiz-options" style="margin-top:10px;">
+          ${lesson.reflect.options.map((opt, i) => `<button class="quiz-option ${s.reflectCorrect === i ? (i === lesson.reflect.correct ? 'correct' : 'wrong') : ''} ${s.reflectCorrect !== null ? 'disabled' : ''} ${s.reflectCorrect !== null && i === lesson.reflect.correct ? 'reveal-correct' : ''}" data-letter="${String.fromCharCode(65+i)}" onclick="answerReflect(${i})">${escapeHtml(opt)}</button>`).join('')}
+        </div>
+        ${s.reflectCorrect !== null ? `<div class="quiz-feedback active ${s.reflectCorrect === lesson.reflect.correct ? 'success' : 'fail'}"><strong>${s.reflectCorrect === lesson.reflect.correct ? '✓ Got it!' : 'Close one!'}</strong> ${escapeHtml(lesson.reflect.explain)}</div>
+        <button class="btn btn-success" style="margin-top:16px;width:100%;justify-content:center;" onclick="completeMission()">🏆 CLAIM REWARD (+${lesson.rewardCoins} coins)</button>` : ''}
+      </div>
+    </div>`;
+}
+
+function toggleSelfCheck(vi) {
+  if (!missionState.selfChecks) missionState.selfChecks = [];
+  missionState.selfChecks[vi] = !missionState.selfChecks[vi];
+  if (missionState.selfChecks[vi]) {
+    state.coins += 1; saveState(); renderHUD();
+  }
+  renderMissionSteps();
+}
+
+function markTalkOpened() {
+  if (missionState && !missionState.talkOpened) {
+    missionState.talkOpened = true;
+    copyToClipboard(missionState.builtPrompt);
+    renderMissionSteps();
+  }
+}
+
+function renderPromptBuilder(pb) {
+  let html = escapeHtml(pb.template);
+  pb.blanks.forEach(b => {
+    html = html.replace(`{${b.id}}`, `<input class="prompt-blank" id="blank-${b.id}" placeholder="${escapeAttr(b.placeholder)}" value="${escapeAttr(b.default)}">`);
+  });
+  html = html.replace(/\n/g, '<br>');
+  return html;
+}
+
+function answerThink(i) {
+  const lesson = getCurrentLesson();
+  missionState.thinkCorrect = i;
+  if (i === lesson.think.correct) { state.coins += 2; saveState(); }
+  renderMissionSteps(); renderHUD();
+}
+
+function finalizePrompt() {
+  const lesson = getCurrentLesson();
+  let prompt = lesson.promptBuilder.template;
+  lesson.promptBuilder.blanks.forEach(b => {
+    const val = document.getElementById(`blank-${b.id}`).value || b.default;
+    prompt = prompt.replace(`{${b.id}}`, val);
+  });
+  missionState.builtPrompt = prompt;
+  copyToClipboard(prompt);
+  renderMissionSteps();
+}
+
+function answerVerify(vi, oi) {
+  const lesson = getCurrentLesson();
+  missionState.verifyAnswers[vi] = oi;
+  if (oi === lesson.verify[vi].correct) { state.coins += 2; saveState(); }
+  renderMissionSteps(); renderHUD();
+}
+
+function answerReflect(i) {
+  const lesson = getCurrentLesson();
+  missionState.reflectCorrect = i;
+  if (i === lesson.reflect.correct) { state.coins += 2; saveState(); }
+  renderMissionSteps(); renderHUD();
+}
+
+function completeMission() {
+  const lesson = getCurrentLesson();
+  const key = missionState.lessonKey;
+  if (!state.completedLessons.includes(key)) state.completedLessons.push(key);
+  let bonus = lesson.rewardCoins;
+  if (isWeekend()) { bonus = Math.round(bonus * 1.5); state.weekendBonusEarnedOn = todayStr(); }
+  state.coins += bonus;
+  if (state.sessionStartTime) {
+    const mins = Math.max(5, Math.round((Date.now() - state.sessionStartTime)/60000));
+    state.totalMinutes += Math.min(mins, 60);
+    state.sessionStartTime = null;
+  }
+  if (state.currentDay === 5) state.stars += 1;
+
+  // AUTO-AWARD THEMED HERO CARD
+  let awardedHero = null;
+  if (lesson.themedHeroes && lesson.themedHeroes.length > 0) {
+    const unownedThemed = lesson.themedHeroes.filter(h => !state.heroOwned.includes(h));
+    if (unownedThemed.length > 0) {
+      const heroId = unownedThemed[Math.floor(Math.random() * unownedThemed.length)];
+      state.heroOwned.push(heroId);
+      awardedHero = HERO_CARDS.find(c => c.id === heroId);
+    }
+  }
+
+  if (state.currentDay < 5) {
+    state.currentDay += 1;
+    showLevelUp(`MISSION CLEAR!`, `+${bonus} coins`);
+  } else {
+    if (state.currentWeek < 3) {
+      state.currentWeek += 1; state.currentDay = 1;
+      showLevelUp(`WEEK ${state.currentWeek - 1} CLEARED!`, `+${bonus} coins · New world opening`);
+    } else if (state.currentWeek === 3) {
+      WEEKS[3].mystery = false; WEEKS[3].name = "MODIFY THE MATRIX";
+      WEEKS[4].mystery = false; WEEKS[4].name = "THE SOLVER";
+      WEEKS[5].mystery = false; WEEKS[5].name = "BUILD REAL";
+      state.currentWeek = 4; state.currentDay = 1;
+      showLevelUp("🎆 WEEKS 4-6 UNLOCKED!", `Mystery revealed!`);
+      launchConfetti();
+    }
+  }
+  saveState();
+  closeModal('missionModal');
+  renderAll();
+
+  // Show hero card unlock with delay so level-up plays first
+  if (awardedHero) {
+    setTimeout(() => {
+      showToast(`⭐ NEW HERO UNLOCKED: ${awardedHero.name.replace('\n', ' ')}!`);
+      setTimeout(() => showHeroDetail(awardedHero.id), 1200);
+    }, 2500);
+  }
+  setTimeout(() => triggerDailyBackup(), 5000);
+}
+
+function showLevelUp(title, text) {
+  document.getElementById('levelupTitle').textContent = title;
+  document.getElementById('levelupText').textContent = text;
+  const el = document.getElementById('levelupOverlay');
+  el.classList.add('active');
+  setTimeout(() => el.classList.remove('active'), 2400);
+}
+
+let currentShopTab = 'hat';
+
+function setShopTab(cat) {
+  currentShopTab = cat;
+  document.querySelectorAll('.shop-tab').forEach(t => t.classList.toggle('active', t.dataset.cat === cat));
+  renderShop();
+}
+
+function renderShop() {
+  const grid = document.getElementById('shopGrid');
+  const items = OUTFITS[currentShopTab] || [];
+  grid.innerHTML = items.map(item => {
+    const owned = state.petOwnedOutfits.includes(item.id);
+    const equipped = state.petEquipped[currentShopTab] === item.id;
+    let locked = false;
+    if (item.unlock) {
+      const need = parseInt(item.unlock.replace('streak', ''));
+      if (state.streak < need && !state.streakMilestones.includes(need)) locked = true;
+    }
+    const cls = locked ? 'locked' : (equipped ? 'equipped' : (owned ? 'owned' : ''));
+    return `<div class="shop-item ${cls}" onclick="${locked?`shopLocked('${item.unlock}')`:`tryShopItem('${item.id}', '${currentShopTab}')`}">
+      <div class="shop-emoji">${item.emoji}</div>
+      <div class="shop-name">${escapeHtml(item.name)}</div>
+      <div class="shop-price ${locked?'locked':''}">${locked ? '🔒 '+item.unlock : (owned ? (equipped ? '✓ ON' : 'TAP') : item.price+' 💰')}</div>
+    </div>`;
+  }).join('');
+}
+
+function shopLocked(unlockReq) {
+  const need = parseInt(unlockReq.replace('streak', ''));
+  alert(`🔒 Locked!\n\nReach a ${need}-day streak to unlock this rare item.`);
+}
+
+function tryShopItem(id, category) {
+  const item = findOutfit(id);
+  if (!item) return;
+  const owned = state.petOwnedOutfits.includes(id);
+  if (!owned) {
+    if (state.coins < item.price) { alert(`Not enough coins! Need ${item.price}, have ${state.coins}.`); return; }
+    if (!confirm(`Buy ${item.name} for ${item.price} coins?`)) return;
+    state.coins -= item.price;
+    state.petOwnedOutfits.push(id);
+    showToast(`✨ ${item.name} purchased!`);
+  }
+  if (!state.petEquipped) state.petEquipped = {};
+  if (state.petEquipped[category] === id) delete state.petEquipped[category];
+  else state.petEquipped[category] = id;
+  saveState(); renderShop(); renderPet(); renderHUD();
+}
+
+function renamePet() {
+  const newName = prompt(`Rename your space buddy! (Current: ${state.petName})\n(2-12 letters)`, state.petName);
+  if (!newName || newName.length < 2 || newName.length > 12) return;
+  state.petName = newName.trim();
+  saveState(); renderPet();
+  showToast(`Renamed to ${state.petName}! 👾`);
+}
+
+function renderHeroCards() {
+  document.getElementById('heroCount').textContent = state.heroOwned.length;
+  document.getElementById('heroTotal').textContent = HERO_CARDS.length;
+  const grid = document.getElementById('heroGrid');
+  grid.innerHTML = HERO_CARDS.map(card => {
+    const owned = state.heroOwned.includes(card.id);
+    const rarityCls = owned ? `rarity-${card.rarity}` : 'unowned';
+    const quote = card.quote.length > 40 ? card.quote.slice(0,40) + '...' : card.quote;
+    return `<div class="hero-card ${rarityCls}" onclick="${owned?`showHeroDetail('${card.id}')`:`tryDrawSpecific()`}">
+      <div class="rarity-badge ${card.rarity}">${card.rarity.toUpperCase()}</div>
+      <div class="hero-card-emoji">${card.emoji}</div>
+      <div class="hero-card-name">${owned ? escapeHtml(card.name) : '???'}</div>
+      <div class="hero-card-quote">${owned ? '"' + escapeHtml(quote) + '"' : 'Locked'}</div>
+    </div>`;
+  }).join('');
+}
+
+function tryDrawSpecific() { showToast('Complete missions to unlock Hero Cards!'); }
+
+function drawHeroCard() {
+  if (state.coins < 20) { alert('Need 20 coins! Complete missions to earn coins.'); return; }
+  const unowned = HERO_CARDS.filter(c => !state.heroOwned.includes(c.id));
+  if (!unowned.length) { alert("You've collected ALL Hero Cards! 🏆 Legend."); return; }
+  state.coins -= 20;
+  const weights = { common: 50, rare: 30, epic: 15, legendary: 5 };
+  const weighted = [];
+  unowned.forEach(c => { const w = weights[c.rarity] || 50; for (let i = 0; i < w; i++) weighted.push(c); });
+  const drawn = weighted[Math.floor(Math.random() * weighted.length)];
+  state.heroOwned.push(drawn.id);
+  saveState(); renderHeroCards(); renderHUD();
+  showHeroDetail(drawn.id);
+  if (drawn.rarity === 'legendary' || drawn.rarity === 'epic') launchConfetti();
+}
+
+function showHeroDetail(id) {
+  const card = HERO_CARDS.find(c => c.id === id);
+  if (!card) return;
+  document.getElementById('heroDetailContent').innerHTML = `
+    <div class="hero-detail-emoji">${card.emoji}</div>
+    <div class="hero-detail-name">${escapeHtml(card.name.replace('\n', ' '))}</div>
+    <div class="hero-detail-title">${escapeHtml(card.title)} · <span class="rarity-badge ${card.rarity}" style="position:static;">${card.rarity.toUpperCase()}</span></div>
+    <div class="hero-detail-quote">"${escapeHtml(card.quote)}"</div>
+    <div class="hero-detail-story">${escapeHtml(card.story)}</div>`;
+  openModal('heroDetailModal');
+}
+
+function saveNote() {
+  const input = document.getElementById('noteInput');
+  const text = input.value.trim();
+  if (!text) return;
+  state.notes.push({ date: new Date().toLocaleDateString(), text });
+  state.coins += 2; input.value = '';
+  saveState(); renderHUD(); renderNotes();
+  showToast('+2 coins! Note saved.');
+}
+
+function savePromptLog() {
+  const prompt = document.getElementById('logPromptInput').value.trim();
+  const reply = document.getElementById('logReplyInput').value.trim();
+  if (!prompt || !reply) { alert('Paste BOTH your prompt AND Claude\'s reply!'); return; }
+  state.promptLog.push({ date: new Date().toLocaleDateString(), prompt, reply, week: state.currentWeek, day: state.currentDay });
+  state.coins += 3;
+  document.getElementById('logPromptInput').value = '';
+  document.getElementById('logReplyInput').value = '';
+  saveState(); renderHUD(); renderPromptLog();
+  showToast('+3 coins! Prompt logged.');
+}
+
+function toggleAddProject() { document.getElementById('addProjectForm').classList.toggle('hidden'); }
+
+function saveProject() {
+  const title = document.getElementById('projTitle').value.trim();
+  const desc = document.getElementById('projDesc').value.trim();
+  const link = document.getElementById('projLink').value.trim();
+  if (!title) { alert('Project needs a name!'); return; }
+  state.projects.push({ title, desc, link, date: new Date().toLocaleDateString() });
+  state.coins += 5;
+  document.getElementById('projTitle').value = '';
+  document.getElementById('projDesc').value = '';
+  document.getElementById('projLink').value = '';
+  document.getElementById('addProjectForm').classList.add('hidden');
+  saveState(); renderHUD(); renderProjects();
+  showToast('+5 coins! Build saved.');
+}
+
+function showBuildsHelp() { openModal('buildsHelpModal'); }
+
+function buildBackupEmail() {
+  const today = new Date().toLocaleDateString();
+  const lesson = getCurrentLesson();
+  const recentNotes = state.notes.slice(-5).reverse();
+  const recentPrompts = state.promptLog.slice(-5).reverse();
+  const dailyQuiz = pickDailyQuiz();
+  const week = WEEKS.find(w => w.id === state.currentWeek);
+  const warnings = [];
+  if (state.streak === 0 && state.completedLessons.length > 0) warnings.push("Streak broken");
+  if (state.dailyQuizTotal > 0) {
+    const rate = state.dailyQuizCorrect / state.dailyQuizTotal;
+    if (rate < 0.5 && state.dailyQuizTotal >= 5) warnings.push(`Quiz accuracy low (${Math.round(rate*100)}%)`);
+  }
+  if (state.promptLog.length > 0) {
+    const avgPromptLen = state.promptLog.slice(-5).reduce((s, p) => s + p.prompt.length, 0) / Math.min(5, state.promptLog.length);
+    if (avgPromptLen < 20) warnings.push("Recent prompts very short");
+  }
+  if (state.completedLessons.length > 0 && state.notes.length === 0) warnings.push("No notes written yet");
+
+  const subject = `[Code Cadet] ${CADET_NAME} · Week ${state.currentWeek} Day ${state.currentDay} · ${today}`;
+  let body = `Hi Dad! 🚀 Here's my report:\n\n`;
+  body += `═══════════════════════════════════\n📊 PROGRESS DASHBOARD\n═══════════════════════════════════\n`;
+  body += `Date: ${today}\nStreak: ${state.streak} day${state.streak===1?'':'s'} 🔥 (Freezes left: ${state.streakFreezes})\n`;
+  body += `Week ${state.currentWeek}: ${week?.name || '?'} — Day ${state.currentDay}/5\n`;
+  body += `Lessons done: ${state.completedLessons.length}/30\nTotal minutes: ${state.totalMinutes}\n`;
+  body += `Coins: ${state.coins} | Stars: ${state.stars}\nHero Cards: ${state.heroOwned.length}/${HERO_CARDS.length}\n`;
+  body += `Quiz accuracy: ${state.dailyQuizCorrect}/${state.dailyQuizTotal}${state.dailyQuizTotal>0?' ('+Math.round(state.dailyQuizCorrect/state.dailyQuizTotal*100)+'%)':''}\n\n`;
+  if (lesson) {
+    body += `═══════════════════════════════════\n🎯 TODAY'S MISSION\n═══════════════════════════════════\n`;
+    body += `Title: ${lesson.title}\nGoal: ${lesson.intro}\n\n`;
+  }
+  body += `═══════════════════════════════════\n🧠 TODAY'S DAILY QUIZ\n═══════════════════════════════════\n`;
+  body += `Q: ${dailyQuiz.q}\nAnswered: ${state.dailyQuizAnsweredOn === todayStr() ? 'Yes' : 'Not yet'}\n\n`;
+  if (recentNotes.length) {
+    body += `═══════════════════════════════════\n📝 RECENT NOTES (last 5)\n═══════════════════════════════════\n`;
+    recentNotes.forEach(n => { body += `[${n.date}] ${n.text}\n\n`; });
+  }
+  if (recentPrompts.length) {
+    body += `═══════════════════════════════════\n💬 RECENT CONVERSATIONS WITH CLAUDE (last 5)\n═══════════════════════════════════\n`;
+    recentPrompts.forEach(p => {
+      body += `[${p.date}] Week ${p.week} Day ${p.day}\nETHAN ASKED:\n  ${p.prompt}\n\nCLAUDE SAID:\n  ${p.reply}\n\n---\n\n`;
+    });
+  }
+  if (state.projects.length) {
+    body += `═══════════════════════════════════\n🛠 MY BUILDS (latest 5)\n═══════════════════════════════════\n`;
+    state.projects.slice(-5).reverse().forEach(p => {
+      body += `★ ${p.title}\n  ${p.desc || 'No description'}\n`;
+      if (p.link) body += `  Link: ${p.link}\n`;
+      body += `  Saved: ${p.date}\n\n`;
+    });
+  }
+  if (warnings.length) {
+    body += `═══════════════════════════════════\n⚠ PARENT WATCH SIGNALS\n═══════════════════════════════════\n`;
+    warnings.forEach(w => body += `• ${w}\n`); body += `\n`;
+  }
+  body += `═══════════════════════════════════\n🏆 WEEKLY HIGHLIGHTS\n═══════════════════════════════════\n`;
+  body += `Best project: ${state.projects.length ? state.projects[state.projects.length-1].title : 'None yet'}\n`;
+  body += `Streak record: ${state.streak} days\n`;
+  if (state.streakMilestones.length) body += `Milestones: ${state.streakMilestones.map(m=>m+'d').join(', ')}\n`;
+  body += `\n═══════════════════════════════════\n📂 FULL BACKUP DATA (for restore)\n═══════════════════════════════════\n`;
+  body += `(Paste between markers into IMPORT to restore)\n\n>>>BACKUP_START<<<\n${JSON.stringify(state)}\n>>>BACKUP_END<<<\n\nLove,\n${CADET_NAME} 🚀`;
+  return { subject, body };
+}
+
+function triggerDailyBackup() {
+  const today = todayStr();
+  if (state.lastBackupDate === today) { showToast('Already backed up today!'); return; }
+  openBackupEmail(true);
+}
+
+function manualBackup() { openBackupEmail(false); }
+
+function openBackupEmail(isAuto) {
+  if (PARENT_EMAIL === 'YOUR_EMAIL@gmail.com') {
+    alert("⚠ Dad needs to set the email first!"); return;
+  }
+  const { subject, body } = buildBackupEmail();
+  const mailtoUrl = `mailto:${encodeURIComponent(PARENT_EMAIL)}?subject=${encodeURIComponent(subject)}&body=${encodeURIComponent(body)}`;
+  showEmailPrompt(mailtoUrl, isAuto);
+}
+
+function showEmailPrompt(mailtoUrl, isAuto) {
+  let existing = document.getElementById('emailPromptModal');
+  if (existing) existing.remove();
+  const m = document.createElement('div');
+  m.id = 'emailPromptModal';
+  m.className = 'modal-bg active';
+  m.innerHTML = `<div class="modal" style="max-width:520px;text-align:center;">
+    <h2>✉ SEND TO DAD!</h2>
+    <p style="margin:14px 0 18px;font-size:16px;line-height:1.6;">
+      ${isAuto ? "Mission complete! 🎉 Time to send your progress." : "Send latest progress to Dad?"}<br>
+      <strong>Tap below → Mail opens with everything filled → just hit SEND ↑</strong>
+    </p>
+    <a href="${mailtoUrl}" class="btn btn-primary" style="width:100%;justify-content:center;" onclick="markBackupSent()">📨 OPEN MAIL & SEND</a>
+    <button class="btn btn-ghost" style="margin-top:10px;width:100%;justify-content:center;" onclick="document.getElementById('emailPromptModal').remove()">Skip for now</button>
+  </div>`;
+  document.body.appendChild(m);
+}
+
+function markBackupSent() {
+  state.lastBackupDate = todayStr();
+  state.backupCount = (state.backupCount || 0) + 1;
+  saveState();
+  setTimeout(() => {
+    const m = document.getElementById('emailPromptModal');
+    if (m) m.remove();
+    renderHUD();
+    showToast('✓ Mail opened. Press SEND in Mail!');
+  }, 400);
+}
+
+let logoClicks = 0; let logoTimer = null;
+document.getElementById('logoBtn').addEventListener('click', () => {
+  logoClicks += 1;
+  clearTimeout(logoTimer);
+  logoTimer = setTimeout(() => logoClicks = 0, 2000);
+  if (logoClicks >= 5) {
+    logoClicks = 0;
+    openModal('parentModal');
+    setTimeout(() => document.getElementById('parentPass').focus(), 100);
+  }
+});
+
+function checkParentPass() {
+  if (document.getElementById('parentPass').value === PARENT_PASSWORD) {
+    document.getElementById('parentPass').value = '';
+    closeModal('parentModal');
+    showParentDashboard();
+  } else { alert('Wrong code!'); }
+}
+document.getElementById('parentPass').addEventListener('keypress', (e) => {
+  if (e.key === 'Enter') checkParentPass();
+});
+
+function showParentDashboard() {
+  document.getElementById('parentDashboard').classList.remove('hidden');
+  document.getElementById('statStreak').textContent = state.streak;
+  document.getElementById('statLessons').textContent = state.completedLessons.length;
+  document.getElementById('statProjects').textContent = state.projects.length;
+  document.getElementById('statPrompts').textContent = state.promptLog.length;
+  document.getElementById('statMinutes').textContent = state.totalMinutes;
+  document.getElementById('statCards').textContent = state.heroOwned.length;
+  document.getElementById('parentEmailDisplay').textContent = PARENT_EMAIL;
+  document.getElementById('lastBackupDisplay').textContent = state.lastBackupDate || 'never';
+  document.getElementById('backupCountDisplay').textContent = state.backupCount || 0;
+  const notesEl = document.getElementById('parentNotes');
+  notesEl.innerHTML = state.notes.slice().reverse().slice(0,5).map(n => `<div class="note-item"><div class="note-date">${n.date}</div>${escapeHtml(n.text)}</div>`).join('') || '<div class="empty">No notes yet.</div>';
+  const promptsEl = document.getElementById('parentPrompts');
+  promptsEl.innerHTML = state.promptLog.slice().reverse().slice(0,5).map(p => `<div class="log-entry">
+    <div class="log-meta"><span>${p.date}</span><span>W${p.week}-D${p.day}</span></div>
+    <div class="log-prompt"><strong>YOU:</strong> ${escapeHtml(p.prompt)}</div>
+    <div class="log-reply"><strong>CLAUDE:</strong> ${escapeHtml(p.reply)}</div>
+  </div>`).join('') || '<div class="empty">No prompts logged yet.</div>';
+  window.scrollTo({ top: 0, behavior: 'smooth' });
+}
+
+function hideParentDashboard() { document.getElementById('parentDashboard').classList.add('hidden'); }
+
+function exportData() {
+  const blob = new Blob([JSON.stringify(state, null, 2)], { type: 'application/json' });
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement('a');
+  a.href = url;
+  a.download = `ethan_${new Date().toISOString().slice(0,10)}.json`;
+  a.click();
+  URL.revokeObjectURL(url);
+}
+
+function importData(event) {
+  const file = event.target.files[0];
+  if (!file) return;
+  const reader = new FileReader();
+  reader.onload = (e) => {
+    try {
+      let raw = e.target.result;
+      const m = raw.match(/>>>BACKUP_START<<<\s*([\s\S]+?)\s*>>>BACKUP_END<<</);
+      if (m) raw = m[1];
+      const imported = JSON.parse(raw);
+      if (confirm('REPLACE all current progress?')) {
+        state = Object.assign(defaultState(), imported);
+        saveState(); renderAll(); showParentDashboard();
+        showToast('Backup restored!');
+      }
+    } catch(err) { alert('Invalid backup.'); }
+  };
+  reader.readAsText(file);
+}
+
+function importFromPaste() {
+  const raw = prompt("Paste the email backup (whole email or just the BACKUP_START...END block):");
+  if (!raw) return;
+  try {
+    let data = raw;
+    const m = data.match(/>>>BACKUP_START<<<\s*([\s\S]+?)\s*>>>BACKUP_END<<</);
+    if (m) data = m[1];
+    const imported = JSON.parse(data);
+    if (confirm('REPLACE all current progress?')) {
+      state = Object.assign(defaultState(), imported);
+      saveState(); renderAll(); showParentDashboard();
+      showToast('Restored from paste!');
+    }
+  } catch(e) { alert('Could not parse. Make sure you included the BACKUP markers.'); }
+}
+
+function resetAll() {
+  if (!confirm('DELETE all progress?')) return;
+  if (!confirm('Really really sure?')) return;
+  state = defaultState();
+  saveState(); renderAll(); hideParentDashboard();
+  showToast('All progress reset.');
+}
+
+function openModal(id) {
+  document.getElementById(id).classList.add('active');
+  if (id === 'shopModal') renderShop();
+  if (id === 'heroModal') renderHeroCards();
+  if (id === 'mapModal') renderWeeksGrid();
+}
+function closeModal(id) { document.getElementById(id).classList.remove('active'); }
+
+function copyToClipboard(text) {
+  if (!navigator.clipboard) return;
+  navigator.clipboard.writeText(text).then(() => showToast('📋 Copied!')).catch(() => {});
+}
+
+function showToast(msg) {
+  let t = document.getElementById('toast');
+  if (!t) {
+    t = document.createElement('div');
+    t.id = 'toast';
+    t.style.cssText = 'position:fixed;bottom:30px;left:50%;transform:translateX(-50%);background:var(--text-dark);color:var(--gold);padding:14px 28px;border-radius:12px;border:3px solid var(--gold);font-family:Press Start 2P;font-size:11px;z-index:3000;box-shadow:0 4px 0 var(--text-dark);transition:opacity 0.3s;max-width:90vw;text-align:center;';
+    document.body.appendChild(t);
+  }
+  t.textContent = msg;
+  t.style.opacity = '1';
+  clearTimeout(t._tm);
+  t._tm = setTimeout(() => t.style.opacity = '0', 2400);
+}
+
+function escapeHtml(s) {
+  return String(s).replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+}
+function escapeAttr(s) { return String(s).replace(/"/g, '&quot;'); }
+
+function showWelcome() {
+  document.getElementById('welcomeContent').innerHTML = `
+    <div style="font-size:80px; line-height:1; margin: 14px 0;">👽</div>
+    <h2 style="font-family:'Press Start 2P'; font-size: 22px; color: var(--text-dark); margin-bottom: 16px;">
+      MEET PIXEL!
+    </h2>
+    <p style="font-size: 17px; line-height: 1.6; text-align: left; margin-bottom: 12px;">
+      Hi Cadet <strong>${CADET_NAME}</strong>! I'm <strong>Pixel</strong> — a small alien from <strong>Planet Codeon</strong>. 🪐
+    </p>
+    <p style="font-size: 17px; line-height: 1.6; text-align: left; margin-bottom: 12px;">
+      My spaceship crashed on Earth and I'm stranded! To get home, I need to learn how Earth kids talk to AI (like Claude) so I can build a new ship.
+    </p>
+    <p style="font-size: 17px; line-height: 1.6; text-align: left; margin-bottom: 12px;">
+      <strong>Will you help me?</strong> Every day we'll build something cool together. The more you teach me, the closer I get to my family. 💚
+    </p>
+    <p style="font-size: 14px; color: #666; margin-top: 16px;">
+      <em>(P.S. — You can tap on me anytime! And give me a new name if "Pixel" isn't cool enough.)</em>
+    </p>
+    <button class="btn btn-primary" style="margin-top: 18px; width: 100%; justify-content: center; font-size: 18px;" onclick="closeWelcome()">
+      🚀 LET'S START THE ADVENTURE!
+    </button>
+  `;
+  openModal('welcomeModal');
+}
+
+function closeWelcome() {
+  state.welcomeSeen = true;
+  saveState();
+  closeModal('welcomeModal');
+}
+
+if (!state.builtsHelpSeen) { state.builtsHelpSeen = true; saveState(); }
+renderAll();
+
+// First-time welcome — show Pixel intro story
+if (!state.welcomeSeen) {
+  setTimeout(() => showWelcome(), 700);
+}
+
+// Service Worker registration for offline support
+if ('serviceWorker' in navigator) {
+  window.addEventListener('load', () => {
+    navigator.serviceWorker.register('./sw.js').then((reg) => {
+      console.log('SW registered:', reg.scope);
+    }).catch((err) => {
+      console.log('SW registration failed:', err);
+    });
+  });
+}
+</script>
+</body>
+</html>
