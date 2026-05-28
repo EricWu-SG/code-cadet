@@ -302,7 +302,7 @@ html, body { font-family: 'Fredoka', system-ui, sans-serif; color: var(--text-da
     <div class="hud-item tappable" onclick="showHudHelp('shield')"><div class="hud-icon">⚡</div><span id="hudFreeze">0</span></div>
     <div class="hud-item tappable" onclick="showHudHelp('stars')"><div class="hud-icon">⭐</div><span id="hudStars">0</span></div>
     <div class="hud-item tappable" onclick="openModal('mapModal')"><div class="hud-icon">🗺</div><span>Week <span id="hudWeek">1</span></span></div>
-    <div class="hud-item tappable" id="hudBackup" onclick="manualBackup()"><div class="hud-icon">✉</div><span id="hudBackupStatus">No backup</span></div>
+    <div class="hud-item tappable" id="hudBackup" onclick="copyBackup()"><div class="hud-icon">✉</div><span id="hudBackupStatus">No backup</span></div>
   </div>
 </header>
 
@@ -324,6 +324,7 @@ html, body { font-family: 'Fredoka', system-ui, sans-serif; color: var(--text-da
     <h3 style="font-family:'Press Start 2P';font-size:12px;margin:18px 0 10px;">Recent Prompts</h3>
     <div id="parentPrompts" class="log-list"></div>
     <div style="display:flex; gap:10px; margin-top:18px; flex-wrap:wrap;">
+      <button class="btn btn-primary" onclick="copyBackup()">📋 COPY BACKUP</button>
       <button class="btn btn-primary" onclick="openBackupEmail(false)">📧 EMAIL BACKUP</button>
       <button class="btn btn-success" onclick="exportData()">💾 EXPORT JSON</button>
       <button class="btn btn-secondary" onclick="document.getElementById('importInput').click()">📥 IMPORT</button>
@@ -1709,6 +1710,46 @@ function triggerDailyBackup() {
 }
 
 function manualBackup() { openBackupEmail(false); }
+
+// Clipboard backup — for devices with no Mail app (e.g. Ethan's iPad).
+// Copies the full report (incl. restorable JSON markers) so Eric can paste
+// it anywhere: messaging app, notes, cloud doc, etc.
+function copyBackup() {
+  const { body } = buildBackupEmail();
+  const finish = () => {
+    state.lastBackupDate = todayStr();
+    state.backupCount = (state.backupCount || 0) + 1;
+    saveState();
+    renderHUD();
+    showToast('📋 Backup copied! Paste it somewhere safe.');
+  };
+  if (navigator.clipboard && navigator.clipboard.writeText) {
+    navigator.clipboard.writeText(body).then(finish).catch(() => {
+      showCopyFallback(body);
+    });
+  } else {
+    showCopyFallback(body);
+  }
+}
+
+// Fallback: if clipboard API is blocked, show the text in a selectable box
+function showCopyFallback(text) {
+  let existing = document.getElementById('copyFallbackModal');
+  if (existing) existing.remove();
+  const m = document.createElement('div');
+  m.id = 'copyFallbackModal';
+  m.className = 'modal-bg active';
+  m.onclick = (e) => { if (e.target === m) m.remove(); };
+  m.innerHTML = `<div class="modal" style="max-width:560px;">
+    <button class="modal-close" onclick="document.getElementById('copyFallbackModal').remove()">×</button>
+    <h2>📋 Copy Your Backup</h2>
+    <p style="margin:12px 0;font-size:15px;line-height:1.5;">Tap inside the box, select all, and copy. Paste it somewhere safe (a message to yourself, notes, etc.).</p>
+    <textarea readonly style="width:100%;height:220px;font-size:12px;font-family:monospace;padding:10px;border-radius:10px;border:2px solid var(--text-dark);" onclick="this.select()">${escapeHtml(text)}</textarea>
+    <button class="btn btn-primary" style="margin-top:14px;width:100%;justify-content:center;" onclick="document.getElementById('copyFallbackModal').remove()">DONE</button>
+  </div>`;
+  document.body.appendChild(m);
+  setTimeout(() => { const ta = m.querySelector('textarea'); if (ta) ta.select(); }, 100);
+}
 
 function openBackupEmail(isAuto) {
   if (PARENT_EMAIL === 'YOUR_EMAIL@gmail.com') {
