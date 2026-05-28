@@ -310,7 +310,7 @@ html, body { font-family: 'Fredoka', system-ui, sans-serif; color: var(--text-da
 
   <section class="parent-dashboard hidden" id="parentDashboard">
     <div class="parent-badge">★ DAD MODE ★</div>
-    <h2 style="font-family:'Press Start 2P';font-size:18px;margin:10px 0 18px;">Mission Control — Ethan</h2>
+    <h2 style="font-family:'Press Start 2P';font-size:18px;margin:10px 0 18px;">Mission Control — <span id="parentCadetName">Ethan</span></h2>
     <div class="stats-grid">
       <div class="stat"><div class="stat-num" id="statStreak">0</div><div class="stat-label">Streak</div></div>
       <div class="stat"><div class="stat-num" id="statLessons">0</div><div class="stat-label">Lessons</div></div>
@@ -330,6 +330,7 @@ html, body { font-family: 'Fredoka', system-ui, sans-serif; color: var(--text-da
       <button class="btn btn-secondary" onclick="document.getElementById('importInput').click()">📥 IMPORT</button>
       <input type="file" id="importInput" accept=".json,.txt" hidden onchange="importData(event)">
       <button class="btn btn-secondary" onclick="importFromPaste()">📋 PASTE EMAIL</button>
+      <button class="btn btn-secondary" onclick="showProfileManager()">👨‍👩‍👧‍👦 CADETS</button>
       <button class="btn btn-ghost" onclick="hideParentDashboard()">CLOSE</button>
       <button class="btn" style="background:#777" onclick="resetAll()">⚠ RESET</button>
     </div>
@@ -577,10 +578,81 @@ html, body { font-family: 'Fredoka', system-ui, sans-serif; color: var(--text-da
 </div>
 
 <script>
-const STORAGE_KEY = 'codeCadet_ethan_v3';
+// ============================================================
+// MULTI-PROFILE SYSTEM (待辦 B)
+// Each cadet has their own progress under codeCadet_<id>_v3.
+// A registry (codeCadet_profiles) lists all cadets + the active one.
+// Parent password + email stay shared across all profiles.
+// ============================================================
+const PROFILES_KEY = 'codeCadet_profiles';
 const PARENT_PASSWORD = 'eric2026';
 const PARENT_EMAIL = 'Eudemon547@gmail.com';
-const CADET_NAME = 'Ethan';
+const LEGACY_KEY = 'codeCadet_ethan_v3';  // Ethan's original save — must be preserved
+
+// These are set by initProfiles() before any state loads.
+let STORAGE_KEY = LEGACY_KEY;
+let CADET_NAME = 'Ethan';
+
+// Returns the profile registry: { active: <id>, list: [{id, name}] }
+function loadProfiles() {
+  try {
+    const raw = localStorage.getItem(PROFILES_KEY);
+    if (raw) return JSON.parse(raw);
+  } catch (e) {}
+  return null;
+}
+function saveProfiles(p) { localStorage.setItem(PROFILES_KEY, JSON.stringify(p)); }
+
+// Turn a name into a safe storage-key id (lowercase, alphanumeric only)
+function nameToId(name) {
+  return name.trim().toLowerCase().replace(/[^a-z0-9]/g, '') || ('cadet' + Date.now());
+}
+
+// Decide who is playing. Runs once at startup, before loadState().
+// Returns true if a profile is active; false if we must ask for a name.
+function initProfiles() {
+  let profiles = loadProfiles();
+
+  // First run with the new system: migrate Ethan's legacy save if it exists
+  if (!profiles) {
+    const hasLegacy = localStorage.getItem(LEGACY_KEY) !== null;
+    if (hasLegacy) {
+      profiles = { active: 'ethan', list: [{ id: 'ethan', name: 'Ethan' }] };
+      saveProfiles(profiles);
+    } else {
+      return false;  // brand-new device, no profiles yet → ask for name
+    }
+  }
+
+  const active = profiles.list.find(p => p.id === profiles.active) || profiles.list[0];
+  if (!active) return false;
+  // 'ethan' keeps the legacy key so his progress is untouched; others use codeCadet_<id>_v3
+  STORAGE_KEY = (active.id === 'ethan') ? LEGACY_KEY : `codeCadet_${active.id}_v3`;
+  CADET_NAME = active.name;
+  return true;
+}
+
+// Create a new cadet profile and switch to it
+function createProfile(name) {
+  const id = nameToId(name);
+  let profiles = loadProfiles() || { active: null, list: [] };
+  if (!profiles.list.find(p => p.id === id)) {
+    profiles.list.push({ id, name: name.trim() });
+  }
+  profiles.active = id;
+  saveProfiles(profiles);
+  STORAGE_KEY = (id === 'ethan') ? LEGACY_KEY : `codeCadet_${id}_v3`;
+  CADET_NAME = name.trim();
+}
+
+// Switch to an existing profile (reloads the page so all state re-inits cleanly)
+function switchProfile(id) {
+  const profiles = loadProfiles();
+  if (!profiles) return;
+  profiles.active = id;
+  saveProfiles(profiles);
+  location.reload();
+}
 
 const WEEKS = [
   { id: 1, name: "FIRST CONTACT", theme: "planet-grass", subtitle: "Hello, AI Builder", unlocked: true, description: "Make your first webpages with Claude." },
@@ -887,6 +959,7 @@ function defaultState() {
   };
 }
 
+const hasActiveProfile = initProfiles();
 let state = loadState();
 
 function loadState() {
@@ -1815,6 +1888,8 @@ document.getElementById('parentPass').addEventListener('keypress', (e) => {
 
 function showParentDashboard() {
   document.getElementById('parentDashboard').classList.remove('hidden');
+  const nameEl = document.getElementById('parentCadetName');
+  if (nameEl) nameEl.textContent = CADET_NAME;
   document.getElementById('statStreak').textContent = state.streak;
   document.getElementById('statLessons').textContent = state.completedLessons.length;
   document.getElementById('statProjects').textContent = state.projects.length;
@@ -1935,6 +2010,77 @@ function escapeHtml(s) {
 }
 function escapeAttr(s) { return String(s).replace(/"/g, '&quot;'); }
 
+// ============================================================
+// PROFILE UI (待辦 B)
+// ============================================================
+
+// First-run screen: ask the new cadet for their name
+function showNameEntry() {
+  let m = document.getElementById('nameEntryModal');
+  if (m) m.remove();
+  m = document.createElement('div');
+  m.id = 'nameEntryModal';
+  m.className = 'modal-bg active';
+  m.innerHTML = `<div class="modal" style="max-width:460px;text-align:center;">
+    <div style="font-size:72px;line-height:1;margin:8px 0 12px;">👽</div>
+    <h2 style="font-family:'Press Start 2P';font-size:18px;margin-bottom:14px;">WELCOME, CADET!</h2>
+    <p style="font-size:17px;line-height:1.5;margin-bottom:18px;">Hi! I'm <strong>Pixel</strong> from Planet Codeon. 🪐<br>What should I call you?</p>
+    <input id="nameEntryInput" type="text" maxlength="20" placeholder="Type your name..."
+      style="width:100%;font-size:18px;padding:12px;border-radius:12px;border:3px solid var(--text-dark);text-align:center;font-family:'Fredoka';"
+      onkeypress="if(event.key==='Enter')submitNameEntry()">
+    <button class="btn btn-primary" style="margin-top:16px;width:100%;justify-content:center;font-size:18px;" onclick="submitNameEntry()">🚀 START MY ADVENTURE!</button>
+  </div>`;
+  document.body.appendChild(m);
+  setTimeout(() => { const i = document.getElementById('nameEntryInput'); if (i) i.focus(); }, 100);
+}
+
+function submitNameEntry() {
+  const input = document.getElementById('nameEntryInput');
+  const name = (input.value || '').trim();
+  if (!name) { input.focus(); return; }
+  createProfile(name);
+  const m = document.getElementById('nameEntryModal');
+  if (m) m.remove();
+  // Fresh state for the new cadet, then boot normally
+  state = loadState();
+  if (!state.builtsHelpSeen) { state.builtsHelpSeen = true; saveState(); }
+  renderAll();
+  setTimeout(() => showWelcome(), 500);
+}
+
+// Profile switcher (opened from Parent Dashboard so kids don't switch by accident)
+function showProfileManager() {
+  const profiles = loadProfiles() || { active: null, list: [] };
+  let m = document.getElementById('profileManagerModal');
+  if (m) m.remove();
+  m = document.createElement('div');
+  m.id = 'profileManagerModal';
+  m.className = 'modal-bg active';
+  m.onclick = (e) => { if (e.target === m) m.remove(); };
+  const rows = profiles.list.map(p => {
+    const isActive = p.id === profiles.active;
+    return `<div style="display:flex;align-items:center;justify-content:space-between;gap:10px;padding:12px;border:3px solid var(--text-dark);border-radius:12px;margin-bottom:10px;background:${isActive ? 'var(--gold)' : 'white'};">
+      <span style="font-family:'Press Start 2P';font-size:13px;">${escapeHtml(p.name)}${isActive ? ' ★' : ''}</span>
+      ${isActive ? '<span style="font-size:13px;color:#555;">Playing now</span>' : `<button class="btn btn-secondary" style="padding:6px 14px;font-size:13px;" onclick="switchProfile('${p.id}')">Switch</button>`}
+    </div>`;
+  }).join('');
+  m.innerHTML = `<div class="modal" style="max-width:480px;">
+    <button class="modal-close" onclick="document.getElementById('profileManagerModal').remove()">×</button>
+    <h2>👨‍👩‍👧‍👦 Cadets</h2>
+    <p style="font-size:14px;color:#666;margin:8px 0 16px;">Each cadet has their own separate progress. Switching reloads the app.</p>
+    ${rows}
+    <button class="btn btn-primary" style="width:100%;justify-content:center;margin-top:8px;" onclick="addNewCadet()">➕ ADD NEW CADET</button>
+  </div>`;
+  document.body.appendChild(m);
+}
+
+function addNewCadet() {
+  const m = document.getElementById('profileManagerModal');
+  if (m) m.remove();
+  // Reuse the name-entry screen; createProfile will switch to the new cadet
+  showNameEntry();
+}
+
 function showWelcome() {
   document.getElementById('welcomeContent').innerHTML = `
     <div style="font-size:80px; line-height:1; margin: 14px 0;">👽</div>
@@ -1966,12 +2112,17 @@ function closeWelcome() {
   closeModal('welcomeModal');
 }
 
-if (!state.builtsHelpSeen) { state.builtsHelpSeen = true; saveState(); }
-renderAll();
+if (!hasActiveProfile) {
+  // Brand-new device, no cadet yet — ask for a name before anything else
+  setTimeout(() => showNameEntry(), 200);
+} else {
+  if (!state.builtsHelpSeen) { state.builtsHelpSeen = true; saveState(); }
+  renderAll();
 
-// First-time welcome — show Pixel intro story
-if (!state.welcomeSeen) {
-  setTimeout(() => showWelcome(), 700);
+  // First-time welcome — show Pixel intro story
+  if (!state.welcomeSeen) {
+    setTimeout(() => showWelcome(), 700);
+  }
 }
 
 // Service Worker registration for offline support

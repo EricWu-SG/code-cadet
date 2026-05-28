@@ -1,5 +1,5 @@
 // Code Cadet Service Worker — provides offline support
-const CACHE_NAME = 'code-cadet-v5.0.2';
+const CACHE_NAME = 'code-cadet-v5.1.0';
 const ASSETS = [
   './',
   './index.html',
