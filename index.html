@@ -493,7 +493,7 @@ html, body { font-family: 'Fredoka', system-ui, sans-serif; color: var(--text-da
 <div class="modal-bg" id="shopModal">
   <div class="modal" style="max-width:680px;">
     <button class="modal-close" onclick="closeModal('shopModal')">×</button>
-    <h2>🛍 PIXEL'S CLOSET</h2>
+    <h2 id="shopTitle">🛍 PIXEL'S CLOSET</h2>
     <p>Dress up your space buddy! Spend coins on outfits. Tap to equip.</p>
     <div class="shop-tabs">
       <div class="shop-tab active" data-cat="hat" onclick="setShopTab('hat')">Hats</div>
@@ -1053,6 +1053,7 @@ function getCurrentLesson() {
 }
 
 function getPetMessage() {
+  const petName = state.petName || 'Pixel';
   const lesson = getCurrentLesson();
   if (!lesson) return `Wow Cadet ${CADET_NAME}! We've finished all the unlocked missions. Codeon is so proud of you. More worlds coming soon!`;
   let msg = lesson.petMsg;
@@ -1062,6 +1063,8 @@ function getPetMessage() {
   else if (state.streak >= 3) msg = `Day ${state.streak} together! ` + msg;
   else if (state.streak === 1 && state.visitCount > 1) msg = `Welcome back! Let's continue. ` + msg;
   if (isWeekend() && state.weekendBonusEarnedOn !== todayStr()) msg += ` (Weekend = +50% coins today! 🎉)`;
+  // Pet may have been renamed — swap the hardcoded "Pixel" in lesson text for the current name
+  if (petName !== 'Pixel') msg = msg.replace(/Pixel/g, petName);
   return msg;
 }
 
@@ -1121,7 +1124,7 @@ function renderPet() {
 // HUD chip educational tooltips — Ethan can tap to learn what each stat means
 function showHudHelp(kind) {
   const tips = {
-    coins: { icon: '🪙', title: 'Coins', body: 'Earn coins by completing missions, saving builds, writing notes, and answering quizzes. Spend them in the Shop on outfits for Pixel!' },
+    coins: { icon: '🪙', title: 'Coins', body: `Earn coins by completing missions, saving builds, writing notes, and answering quizzes. Spend them in the Shop on outfits for ${state.petName || 'Pixel'}!` },
     streak: { icon: '🔥', title: 'Streak', body: `You're on day ${state.streak} of showing up! A streak is how many days in a row you've done a mission. Even one tiny mission a day keeps it alive.` },
     shield: { icon: '⚡', title: 'Energy Shield', body: `You have ${state.streakFreeze || 0} shield(s). A shield protects your streak on days you miss. They charge up automatically every few days, so don't stress about perfect attendance!` },
     stars: { icon: '⭐', title: 'Hero Cards', body: `You've collected ${(state.heroes || []).length} Hero Card(s) so far! These are real-life pioneers — coders, scientists, builders. Each finished mission earns a card from that lesson's theme.` }
@@ -1575,6 +1578,9 @@ function setShopTab(cat) {
 }
 
 function renderShop() {
+  const petName = state.petName || 'Pixel';
+  const titleEl = document.getElementById('shopTitle');
+  if (titleEl) titleEl.textContent = `🛍 ${petName.toUpperCase()}'S CLOSET`;
   const grid = document.getElementById('shopGrid');
   const items = OUTFITS[currentShopTab] || [];
   grid.innerHTML = items.map(item => {
